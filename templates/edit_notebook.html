@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_notes.css') }}">
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.page-header {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.editor-container {
+    animation: slideInLeft 0.8s ease-out;
+}
+
+/* Editor personalizado tipo Word */
+.word-editor {
+    width: 100%;
+    height: calc(100vh - 200px);
+    min-height: 500px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 40px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    outline: none;
+    resize: none;
+    overflow-y: auto;
+}
+
+.word-editor:focus {
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+}
+
+.toolbar button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.toolbar button:hover {
+    background: #e9ecef;
+    border-color: #007AFF;
+}
+
+.toolbar button.active {
+    background: #007AFF;
+    color: white;
+    border-color: #007AFF;
+}
+
+.toolbar select {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 12px;
+}
+
+.editor-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="bi bi-pencil-square me-3"></i>
+        Editor de Notas
+    </h1>
+    <p class="page-subtitle">Edita y organiza tus notas de trading con herramientas avanzadas</p>
+</div>
+
+<div class="editor-container">
+    <!-- Barra superior con navegación y controles -->
+    <div class="editor-toolbar">
+        <div class="toolbar-section">
+            <a href="{{ url_for('personal_notebooks') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Volver a Cuadernos
+            </a>
+            
+            <button id="toggle-toolbar" class="btn btn-outline-secondary">
+                <i class="bi bi-eye-slash me-2"></i>
+                Esconder Barra de Herramientas
+            </button>
+        </div>
+        
+        <div class="toolbar-section">
+            <div class="editor-info">
+                <i class="bi bi-file-text me-2"></i>
+                <span>Cuaderno: {{ notebook['name'] }}</span>
+            </div>
+        </div>
+        
+        <div class="toolbar-section">
+            <button type="button" id="save-button" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i>
+                Guardar
+            </button>
+        </div>
+    </div>
+    
+    <!-- Área principal del editor -->
+    <div class="editor-wrapper">
+        <div class="toolbar">
+            <button onclick="formatText('bold')" title="Negrita"><b>B</b></button>
+            <button onclick="formatText('italic')" title="Cursiva"><i>I</i></button>
+            <button onclick="formatText('underline')" title="Subrayado"><u>U</u></button>
+            <button onclick="formatText('strikeThrough')" title="Tachado"><s>S</s></button>
+            
+            <select onchange="formatText('fontSize', this.value)">
+                <option value="">Tamaño</option>
+                <option value="1">8px</option>
+                <option value="2">10px</option>
+                <option value="3">12px</option>
+                <option value="4">14px</option>
+                <option value="5">16px</option>
+                <option value="6">18px</option>
+                <option value="7">20px</option>
+            </select>
+            
+            <select onchange="formatText('fontName', this.value)">
+                <option value="">Fuente</option>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Courier New">Courier New</option>
+            </select>
+            
+            <input type="color" onchange="formatText('foreColor', this.value)" title="Color de texto">
+            
+            <button onclick="formatText('justifyLeft')" title="Alinear izquierda">⬅</button>
+            <button onclick="formatText('justifyCenter')" title="Centrar">↔</button>
+            <button onclick="formatText('justifyRight')" title="Alinear derecha">➡</button>
+            
+            <button onclick="formatText('insertUnorderedList')" title="Lista con viñetas">•</button>
+            <button onclick="formatText('insertOrderedList')" title="Lista numerada">1.</button>
+            
+            <button onclick="insertLink()" title="Insertar enlace">🔗</button>
+            <button onclick="insertTable()" title="Insertar tabla">⊞</button>
+            
+            <button onclick="formatText('undo')" title="Deshacer">↶</button>
+            <button onclick="formatText('redo')" title="Rehacer">↷</button>
+        </div>
+        
+        <form id="edit-notebook-form" method="POST" action="{{ url_for('edit_notebook', notebook_id=notebook['id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div id="content" name="content" class="word-editor" contenteditable="true" placeholder="Comienza a escribir tus notas aquí...">{{ notebook['content'] | safe }}</div>
+            <input type="hidden" name="content" id="hidden-content">
+        </form>
+    </div>
+    
+    <!-- Barra inferior con información -->
+    <div class="editor-footer">
+        <div class="footer-info">
+            <i class="bi bi-info-circle me-2"></i>
+            <span>Editor tipo Word - Todas las funcionalidades disponibles</span>
+        </div>
+        
+        <div class="footer-stats">
+            <span id="word-count">0 palabras</span>
+            <span id="char-count">0 caracteres</span>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(document).ready(function() {
+    console.log('=== INICIANDO EDITOR DE NOTAS SIMPLE ===');
+    
+    // Variables globales
+    let autoSaveInterval;
+    
+    // Función para actualizar contador de palabras
+    function updateWordCount() {
+        const content = $('#content').text();
+        const words = content.trim().split(/\s+/).filter(word => word.length > 0);
+        const characters = content.length;
+        
+        $('#word-count').text(`${words.length} palabras`);
+        $('#char-count').text(`${characters} caracteres`);
+    }
+    
+    // Función para guardar contenido
+    function saveContent() {
+        console.log('💾 Guardando contenido...');
+        
+        // Copiar el contenido del div editable al input hidden
+        $('#hidden-content').val($('#content').html());
+        
+        const $btn = $('#save-button');
+        const originalText = $btn.html();
+        $btn.html('<i class="bi bi-hourglass-split me-2"></i>Guardando...').prop('disabled', true);
+        
+        const formData = new FormData($('#edit-notebook-form')[0]);
+        
+        $.ajax({
+            url: $('#edit-notebook-form').attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log('✅ Contenido guardado exitosamente');
+                Swal.fire({
+                    title: '¡Guardado!',
+                    text: 'Las notas se han guardado correctamente',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ Error al guardar:', error);
+                console.error('Status:', xhr.status);
+                console.error('Response:', xhr.responseText);
+                
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al guardar las notas. Intenta nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            },
+            complete: function() {
+                $btn.html(originalText).prop('disabled', false);
+            }
+        });
+    }
+    
+    // Función para auto-guardado
+    function startAutoSave() {
+        if (autoSaveInterval) {
+            clearInterval(autoSaveInterval);
+        }
+        
+        autoSaveInterval = setInterval(function() {
+            const content = $('#content').text();
+            if (content.trim() !== '') {
+                console.log('🔄 Auto-guardando...');
+                saveContent();
+            }
+        }, 30000); // Cada 30 segundos
+    }
+    
+    // Eventos
+    $('#save-button').click(function(e) {
+        e.preventDefault();
+        saveContent();
+    });
+    
+    $('#content').on('input keyup paste', function() {
+        updateWordCount();
+    });
+    
+    // Atajos de teclado
+    $(document).keydown(function(e) {
+        if (e.ctrlKey && e.keyCode === 83) { // Ctrl+S
+            e.preventDefault();
+            saveContent();
+        }
+    });
+    
+    // Inicializar
+    updateWordCount();
+    startAutoSave();
+    
+    console.log('✅ Editor simple inicializado correctamente');
+});
+
+// Funciones globales para el toolbar
+function formatText(command, value) {
+    document.execCommand(command, false, value);
+    $('#content').focus();
+}
+
+function insertLink() {
+    const url = prompt('Ingresa la URL del enlace:');
+    if (url) {
+        document.execCommand('createLink', false, url);
+        $('#content').focus();
+    }
+}
+
+function insertTable() {
+    const rows = prompt('Número de filas:', '3');
+    const cols = prompt('Número de columnas:', '3');
+    
+    if (rows && cols) {
+        let table = '<table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">';
+        for (let i = 0; i < rows; i++) {
+            table += '<tr>';
+            for (let j = 0; j < cols; j++) {
+                table += '<td style="padding: 8px; border: 1px solid #ddd;">&nbsp;</td>';
+            }
+            table += '</tr>';
+        }
+        table += '</table>';
+        
+        document.execCommand('insertHTML', false, table);
+        $('#content').focus();
+    }
+}
+</script>
+{% endblock %}

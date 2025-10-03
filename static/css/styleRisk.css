@@ -1,0 +1,479 @@
+/* ========================================
+   GESTIÓN DE RIESGO - APPLE MINIMALIST STYLE
+   ======================================== */
+
+.risk-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-8);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   PAGE HEADER - Apple Style
+   ======================================== */
+
+.risk-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.risk-title {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2) 0;
+  letter-spacing: -0.5px;
+}
+
+.risk-subtitle {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: var(--font-normal);
+}
+
+/* ========================================
+   RISK CARDS - Apple Style
+   ======================================== */
+
+.risk-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.risk-card {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-all);
+  animation: slideInUp 0.8s ease-out;
+}
+
+.risk-card:hover {
+  border-color: var(--border-secondary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.risk-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.risk-card-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--btn-primary), var(--btn-primary-hover));
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--text-xl);
+}
+
+.risk-card-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ========================================
+   FORM ELEMENTS - Apple Style
+   ======================================== */
+
+.form-group {
+  margin-bottom: var(--space-6);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-4);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-primary);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  transition: var(--transition-all);
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--btn-primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ========================================
+   BUTTONS - Apple Style
+   ======================================== */
+
+.btn-calculate {
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: linear-gradient(135deg, var(--btn-primary), var(--btn-primary-hover));
+  border: none;
+  border-radius: var(--radius-lg);
+  color: white;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: var(--transition-all);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.btn-calculate:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-calculate:active {
+  transform: translateY(0);
+}
+
+.btn-calculate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========================================
+   RESULTS - Apple Style
+   ======================================== */
+
+.result-container {
+  background: linear-gradient(135deg, var(--surface-secondary), var(--surface-primary));
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-top: var(--space-6);
+  animation: slideInUp 0.6s ease-out;
+}
+
+.result-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.result-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--btn-primary);
+  margin: 0;
+}
+
+.result-description {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: var(--space-2) 0 0 0;
+}
+
+/* ========================================
+   DRAWDOWN ANALYSIS - Apple Style
+   ======================================== */
+
+.drawdown-section {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-all);
+  animation: slideInUp 1s ease-out;
+}
+
+.drawdown-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.drawdown-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #ff9500, #ffad33);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--text-xl);
+}
+
+.drawdown-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.drawdown-description {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: var(--space-2) 0 var(--space-6) 0;
+}
+
+/* ========================================
+   CHART CONTAINER - Apple Style
+   ======================================== */
+
+.chart-container {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-top: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4) 0;
+  text-align: center;
+}
+
+#drawdownChart {
+  width: 100%;
+  height: 400px;
+  border-radius: var(--radius-lg);
+}
+
+/* ========================================
+   MODAL - Apple Style
+   ======================================== */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background-color: var(--surface-primary);
+  margin: 5% auto;
+  padding: var(--space-8);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-2xl);
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+  box-shadow: var(--shadow-xl);
+  animation: slideInUp 0.4s ease-out;
+}
+
+.close {
+  position: absolute;
+  right: var(--space-4);
+  top: var(--space-4);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition-all);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.close:hover {
+  color: var(--text-primary);
+  background-color: var(--surface-secondary);
+}
+
+/* ========================================
+   LOADING STATES - Apple Style
+   ======================================== */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8);
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  margin-top: var(--space-6);
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-primary);
+  border-top: 3px solid var(--btn-primary);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   ANIMATIONS - Apple Style
+   ======================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  .risk-container {
+    padding: var(--space-6);
+    gap: var(--space-8);
+  }
+  
+  .risk-cards {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  
+  .risk-card {
+    padding: var(--space-6);
+  }
+  
+  .risk-card-header {
+    margin-bottom: var(--space-4);
+  }
+  
+  .risk-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: var(--text-lg);
+  }
+  
+  .risk-card-title {
+    font-size: var(--text-lg);
+  }
+  
+  .form-input {
+    padding: var(--space-3);
+  }
+  
+  .btn-calculate {
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .modal-content {
+    margin: 10% auto;
+    padding: var(--space-6);
+    width: 95%;
+  }
+  
+  #drawdownChart {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .risk-container {
+    padding: var(--space-4);
+  }
+  
+  .risk-title {
+    font-size: var(--text-3xl);
+  }
+  
+  .risk-subtitle {
+    font-size: var(--text-base);
+  }
+  
+  .risk-card {
+    padding: var(--space-4);
+  }
+  
+  .risk-card-icon {
+    width: 36px;
+    height: 36px;
+    font-size: var(--text-base);
+  }
+  
+  .risk-card-title {
+    font-size: var(--text-base);
+  }
+  
+  .result-value {
+    font-size: var(--text-xl);
+  }
+}

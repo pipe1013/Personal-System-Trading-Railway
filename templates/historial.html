@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styleHistory.css') }}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.page-header {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.history-controls {
+    animation: slideInLeft 0.8s ease-out;
+}
+
+.table-container {
+    animation: fadeInUp 1s ease-out;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="bi bi-journal-text me-3"></i>
+        Historial de Trades
+    </h1>
+    <p class="page-subtitle">Revisa y gestiona el historial completo de tus operaciones de trading</p>
+</div>
+
+<div class="history-container">
+    <div class="history-controls">
+        <div class="control-card">
+            <div class="control-group">
+                <label for="notebook_filter" class="form-label">
+                    <i class="bi bi-journal me-2"></i>
+                    Filtrar por Cuaderno
+                </label>
+                <select id="notebook_filter" name="notebook_filter" class="form-control">
+                    <option value="">Todos los cuadernos</option>
+                    {% for notebook in notebooks %}
+                        <option value="{{ notebook.id }}">{{ notebook.name }} - {{ notebook.account_type }} - ${{ notebook.initial_balance }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="control-actions">
+                <button id="filterButton" class="btn btn-primary btn-lg" onclick="loadTradeHistory()">
+                    <i class="bi bi-funnel me-2"></i>
+                    Filtrar Historial
+                </button>
+                
+                <button id="deleteNotebookButton" class="btn btn-danger btn-lg" style="display:none;" onclick="confirmDeleteNotebook()">
+                    <i class="bi bi-trash me-2"></i>
+                    Eliminar Cuaderno
+                </button>
+                
+                <button id="downloadHistoryButton" class="btn btn-success btn-lg" style="display:none;" onclick="downloadTradeHistory()">
+                    <i class="bi bi-download me-2"></i>
+                    Descargar Excel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-card">
+            <div class="table-header">
+                <h3 class="table-title">
+                    <i class="bi bi-table me-2"></i>
+                    Registros de Trading
+                </h3>
+                <div class="table-subtitle">Historial detallado de todas tus operaciones</div>
+            </div>
+            
+            <div class="table-body">
+                <table id="tradeHistoryTable" class="display modern-table">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-journal me-1"></i>Cuaderno</th>
+                            <th><i class="bi bi-graph-up me-1"></i>Activo</th>
+                            <th><i class="bi bi-calculator me-1"></i>Lotaje</th>
+                            <th><i class="bi bi-arrow-up-right me-1"></i>Entrada</th>
+                            <th><i class="bi bi-shield-exclamation me-1"></i>Stop Loss</th>
+                            <th><i class="bi bi-trophy me-1"></i>Take Profit</th>
+                            <th><i class="bi bi-check-circle me-1"></i>Resultado</th>
+                            <th><i class="bi bi-calendar me-1"></i>Fecha</th>
+                            <th><i class="bi bi-heart me-1"></i>Emoción</th>
+                            <th><i class="bi bi-check-square me-1"></i>Rutina</th>
+                            <th><i class="bi bi-currency-dollar me-1"></i>P&L</th>
+                            <th><i class="bi bi-image me-1"></i>Imagen</th>
+                            <th><i class="bi bi-gear me-1"></i>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradeHistoryContainer">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function loadTradeHistory() {
+        const notebookId = document.getElementById('notebook_filter').value;
+
+        if (notebookId) {
+            document.getElementById('deleteNotebookButton').style.display = 'inline-block';
+            document.getElementById('downloadHistoryButton').style.display = 'inline-block';
+        } else {
+            document.getElementById('deleteNotebookButton').style.display = 'none';
+            document.getElementById('downloadHistoryButton').style.display = 'none';
+        }
+
+        fetch(`/cargar_historial?notebook_id=${notebookId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    displayTradeHistory(data);
+                }
+            })
+            .catch(error => {
+                console.error("Error al cargar el historial:", error);
+                alert("Hubo un error al cargar el historial. Por favor, inténtalo de nuevo.");
+            });
+    }
+
+    function displayTradeHistory(data) {
+        const container = document.getElementById('tradeHistoryContainer');
+        container.innerHTML = '';
+
+        data.trades.forEach(trade => {
+            const imageUrl = trade.entry_image_url ? trade.entry_image_url : null;
+            const row = document.createElement('tr');
+            row.className = `trade-row ${trade.result === 'Ganadora' ? 'ganadora-row' : 'perdedora-row'}`;
+            row.setAttribute('data-result', trade.result);
+            
+            row.innerHTML = `
+                <td>${trade.notebook_name}</td>
+                <td>${trade.asset}</td>
+                <td>${trade.lot_size}</td>
+                <td>${trade.entry_point}</td>
+                <td>${trade.stop_loss || 'N/A'}</td>
+                <td>${trade.take_profit || 'N/A'}</td>
+                <td>${trade.result}</td>
+                <td>${trade.trade_date}</td>
+                <td>${trade.emotion}</td>
+                <td>${trade.activation_routine === 'yes' ? 'Sí' : 'No'}</td>
+                <td>${trade.profit_loss || 'N/A'}</td>
+                <td>
+                    ${imageUrl ? `<a href="${imageUrl}" class="btn btn-sm btn-outline-primary" target="_blank">Ver Imagen</a>` : 'N/A'}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDeleteTrade(${trade.trade_id})">
+                        <i class="bi bi-trash me-1"></i>Eliminar
+                    </button>
+                </td>
+            `;
+            
+            container.appendChild(row);
+        });
+    }
+
+    function downloadTradeHistory() {
+        const notebookId = document.getElementById('notebook_filter').value;
+        if (!notebookId) {
+            alert("Por favor, selecciona un cuaderno para descargar el historial.");
+            return;
+        }
+        window.location.href = `/descargar_historial?notebook_id=${notebookId}`;
+    }
+
+    function confirmDeleteNotebook() {
+        const notebookId = document.getElementById('notebook_filter').value;
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción eliminará el cuaderno y todos sus registros asociados.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new URLSearchParams();
+                formData.append('notebook_id', notebookId);
+                formData.append('csrf_token', '{{ csrf_token() }}');
+
+                fetch('/eliminar_cuaderno', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire('Error', data.error, 'error');
+                    } else {
+                        Swal.fire('Eliminado', data.success, 'success');
+                        loadTradeHistory();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al eliminar el cuaderno:", error);
+                    Swal.fire('Error', 'Hubo un error al eliminar el cuaderno. Por favor, inténtalo de nuevo.', 'error');
+                });
+            }
+        });
+    }
+
+    function confirmDeleteTrade(tradeId) {
+        console.log('Trade ID recibido:', tradeId, 'Tipo:', typeof tradeId);
+        
+        // Validar que el tradeId sea válido
+        if (!tradeId || tradeId === 'undefined' || tradeId === 'null') {
+            Swal.fire('Error', 'ID de trade inválido', 'error');
+            return;
+        }
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción eliminará el trade de forma permanente.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Eliminando...',
+                    text: 'Por favor espera',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                const formData = new URLSearchParams();
+                formData.append('trade_id', tradeId);
+                formData.append('csrf_token', '{{ csrf_token() }}');
+
+                console.log('Enviando trade_id:', tradeId);
+                console.log('CSRF token:', '{{ csrf_token() }}');
+
+                fetch('/eliminar_trade', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', response.headers);
+                    
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            console.log('Error response text:', text);
+                            throw new Error(`HTTP error! status: ${response.status} - ${text}`);
+                        });
+                    }
+                    
+                    return response.text().then(text => {
+                        console.log('Response text:', text);
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.error('Error parsing JSON:', e);
+                            throw new Error('La respuesta del servidor no es JSON válido');
+                        }
+                    });
+                })
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire('Error', data.error, 'error');
+                    } else {
+                        Swal.fire('Eliminado', data.success, 'success');
+                        loadTradeHistory();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al eliminar el trade:", error);
+                    Swal.fire('Error', `Hubo un error al eliminar el trade: ${error.message}`, 'error');
+                });
+            }
+        });
+    }
+
+    // Inicialización cuando el documento esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Historial de trades cargado');
+    });
+</script>
+{% endblock %}

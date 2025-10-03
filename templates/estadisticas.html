@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styleStatistics.css') }}">
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.page-header {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.selector-container {
+    animation: slideInLeft 0.8s ease-out;
+}
+
+.chart {
+    animation: scaleIn 0.8s ease-out;
+    animation-fill-mode: both;
+}
+
+.chart:nth-child(1) { animation-delay: 0.1s; }
+.chart:nth-child(2) { animation-delay: 0.2s; }
+.chart:nth-child(3) { animation-delay: 0.3s; }
+.chart:nth-child(4) { animation-delay: 0.4s; }
+.chart:nth-child(5) { animation-delay: 0.5s; }
+.chart:nth-child(6) { animation-delay: 0.6s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="bi bi-bar-chart-line me-3"></i>
+        Estadísticas de Trading
+    </h1>
+    <p class="page-subtitle">Analiza tu rendimiento y métricas de trading con gráficos detallados</p>
+</div>
+
+<!-- Subtle Stats Animation -->
+<div class="subtle-stats-animation">
+    <div class="stats-icon">📊</div>
+    <div class="stats-text">Analizando datos...</div>
+</div>
+
+<div class="stats-container">
+    <!-- Selector de cuadernos y meses -->
+    <div class="selector-container" id="selectorContainer">
+        <div class="selector-card">
+            <div class="selector-group">
+                <label for="notebook" class="form-label">
+                    <i class="bi bi-journal me-2"></i>
+                    Selecciona Cuaderno
+                </label>
+                <select id="notebook" class="form-control">
+                    <option value="">Selecciona un cuaderno</option>
+                    {% for notebook in notebooks %}
+                        <option value="{{ notebook.id }}" {% if notebook.id == notebook_id %}selected{% endif %}>
+                            {{ notebook.name }} - {{ notebook.account_type }} - ${{ notebook.initial_balance }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="selector-group">
+                <label for="mes" class="form-label">
+                    <i class="bi bi-calendar me-2"></i>
+                    Selecciona Mes
+                </label>
+                <select id="mes" class="form-control">
+                    <option value="">Selecciona un mes</option>
+                </select>
+            </div>
+
+            <div class="selector-actions">
+                <button id="loadChartsButton" class="btn btn-primary btn-lg">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Ver Gráficos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor para los gráficos -->
+    <div class="charts-container" id="chartsContainer" style="display: none;">
+        <div class="chart">
+            <div class="chart-header">
+                <h2 class="chart-title">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Rendimiento del Capital Acumulado
+                </h2>
+                <div class="chart-subtitle">Evolución del capital a lo largo del tiempo</div>
+            </div>
+            <div class="chart-body">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart">
+            <div class="chart-header">
+                <h2 class="chart-title">
+                    <i class="bi bi-pie-chart me-2"></i>
+                    Distribución de Resultados
+                </h2>
+                <div class="chart-subtitle">Proporción de trades ganadores vs perdedores</div>
+            </div>
+            <div class="chart-body">
+                <canvas id="resultsDistributionChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart">
+            <div class="chart-header">
+                <h2 class="chart-title">
+                    <i class="bi bi-bar-chart me-2"></i>
+                    Promedio de Ganancias y Pérdidas
+                </h2>
+                <div class="chart-subtitle">Promedio de ganancias y pérdidas en USD</div>
+            </div>
+            <div class="chart-body">
+                <canvas id="averageWinLossChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart">
+            <div class="chart-header">
+                <h2 class="chart-title">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    Rendimiento Semanal
+                </h2>
+                <div class="chart-subtitle">Rendimiento de las últimas 4 semanas</div>
+            </div>
+            <div class="chart-body">
+                <canvas id="weeklyPerformanceChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart">
+            <div class="chart-header">
+                <h2 class="chart-title">
+                    <i class="bi bi-heart me-2"></i>
+                    Tasa de Éxito por Emoción
+                </h2>
+                <div class="chart-subtitle">Rendimiento según el estado emocional</div>
+            </div>
+            <div class="chart-body">
+                <canvas id="emotionPerformanceChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart">
+            <div class="chart-header">
+                <h2 class="chart-title">
+                    <i class="bi bi-graph-up-arrow me-2"></i>
+                    Activo Más Operado
+                </h2>
+                <div class="chart-subtitle">Distribución de operaciones por activo</div>
+            </div>
+            <div class="chart-body">
+                <canvas id="mostTradedAssetChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Listener para el selector de cuadernos
+    document.getElementById('notebook').addEventListener('change', function() {
+        const notebookId = this.value;
+
+        if (notebookId) {
+            loadMonths(notebookId);
+        } else {
+            // Limpiar los meses si no hay un cuaderno seleccionado
+            const mesSelect = document.getElementById('mes');
+            mesSelect.innerHTML = '<option value="">Selecciona un mes</option>';
+        }
+    });
+
+    // Función para cargar los meses de un cuaderno específico vía AJAX
+    function loadMonths(notebookId) {
+        fetch(`/obtener_meses?notebook_id=${notebookId}`)
+            .then(response => response.json())
+            .then(data => {
+                const mesSelect = document.getElementById('mes');
+                mesSelect.innerHTML = '<option value="">Selecciona un mes</option>';
+
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    data.months.forEach(month => {
+                        const option = document.createElement('option');
+                        option.value = month;
+                        option.textContent = month;
+                        mesSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error al cargar los meses:", error);
+                alert("Hubo un error al cargar los meses. Por favor, inténtalo de nuevo.");
+            });
+    }
+
+    // Listener para el botón de cargar gráficos
+    document.getElementById('loadChartsButton').addEventListener('click', function() {
+        const notebookId = document.getElementById('notebook').value;
+        const mes = document.getElementById('mes').value;
+
+        if (notebookId && mes) {
+            // Mostrar el contenedor de gráficos y cargar los gráficos
+            document.getElementById('chartsContainer').style.display = 'grid';
+            // Ocultar el selector de cuadernos y el botón
+            document.getElementById('selectorContainer').style.display = 'none';
+            loadCharts(notebookId, mes);
+        } else {
+            alert("Por favor, selecciona un cuaderno y un mes antes de cargar los gráficos.");
+        }
+    });
+
+    // Función para cargar los gráficos vía AJAX
+    function loadCharts(notebookId, mes) {
+        fetch(`/cargar_datos_estadisticas?notebook_id=${notebookId}&mes=${mes}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    console.log("Datos recibidos del servidor:", data);
+                    displayCharts(data);
+                }
+            })
+            .catch(error => {
+                console.error("Error al cargar los gráficos:", error);
+                alert("Hubo un error al cargar los gráficos. Por favor, inténtalo de nuevo.");
+            });
+    }
+
+
+    // Función para mostrar los gráficos en el contenedor
+    function displayCharts(data) {
+        const chartsContainer = document.getElementById('chartsContainer');
+
+        if (data.performance_data.dates.length > 0) {
+            createPerformanceChart(data.performance_data);
+        }
+        if (data.results_distribution.wins > 0 || data.results_distribution.losses > 0) {
+            createResultsDistributionChart(data.results_distribution);
+        }
+        if (data.average_win_loss.avg_win !== 0 || data.average_win_loss.avg_loss !== 0) {
+            createAverageWinLossChart(data.average_win_loss);
+        }
+        if (data.weekly_performance.weeks.length > 0) {
+            createWeeklyPerformanceChart(data.weekly_performance);
+        }
+        if (data.emotion_performance.emotions.length > 0) {
+            createEmotionPerformanceChart(data.emotion_performance);
+        }
+        if (data.asset_distribution.assets.length > 0) {
+            createMostTradedAssetChart(data.asset_distribution);
+        }
+    }
+
+    // Funciones para crear los gráficos con Chart.js
+    function createPerformanceChart(performanceData) {
+        const container = document.getElementById('performanceChart').parentElement;
+        container.innerHTML = '<canvas id="performanceChart"></canvas>';
+
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: performanceData.dates,
+                datasets: [{
+                    label: 'Capital en Cuenta',
+                    data: performanceData.capital,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    pointRadius: 4,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Capital en USD'
+                        },
+                        suggestedMin: Math.min(...performanceData.capital) - 100,
+                        suggestedMax: Math.max(...performanceData.capital) + 100
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    }
+
+    function createResultsDistributionChart(resultsData) {
+        const ctx = document.getElementById('resultsDistributionChart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Ganadora', 'Perdedora'],
+                datasets: [{
+                    data: [resultsData.wins, resultsData.losses],
+                    backgroundColor: ['#4CAF50', '#FF5733']
+                }]
+            }
+        });
+    }
+
+    function createAverageWinLossChart(avgWinLossData) {
+        const ctx = document.getElementById('averageWinLossChart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Ganancia Promedio', 'Pérdida Promedio'],
+                datasets: [{
+                    label: 'Monto en USD',
+                    data: [avgWinLossData.avg_win, avgWinLossData.avg_loss],
+                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)']
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Monto en USD'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createWeeklyPerformanceChart(weeklyPerformanceData) {
+        const ctx = document.getElementById('weeklyPerformanceChart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: weeklyPerformanceData.weeks,
+                datasets: [{
+                    label: 'Ganancia/Pérdida por Semana',
+                    data: weeklyPerformanceData.profits,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                }]
+            }
+        });
+    }
+
+    function createEmotionPerformanceChart(emotionPerformanceData) {
+        const ctx = document.getElementById('emotionPerformanceChart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: emotionPerformanceData.emotions,
+                datasets: [{
+                    label: 'Tasa de Éxito',
+                    data: emotionPerformanceData.success_rates,
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        ticks: {
+                            callback: function(value) {
+                                return (value * 100) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createMostTradedAssetChart(assetData) {
+        const ctx = document.getElementById('mostTradedAssetChart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: assetData.assets,
+                datasets: [{
+                    label: 'Activo Más Operado',
+                    data: assetData.counts,
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#FF5733',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#2ecc71',
+                        '#9b59b6'
+                    ]
+                }]
+            }
+        });
+    }
+</script>
+{% endblock %}

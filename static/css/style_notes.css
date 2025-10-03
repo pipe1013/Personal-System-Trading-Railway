@@ -1,0 +1,434 @@
+/* ========================================
+   EDITOR DE NOTAS - APPLE MINIMALIST STYLE
+   ======================================== */
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  height: calc(100vh - 80px);
+  width: 100%;
+    margin: 0;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   EDITOR TOOLBAR - Apple Style
+   ======================================== */
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.editor-info {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+}
+
+.editor-info i {
+  color: var(--btn-primary);
+}
+
+/* ========================================
+   EDITOR CONTENT - Apple Style
+   ======================================== */
+
+.editor-content {
+  flex-grow: 1;
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.editor-content .note-editor {
+  height: 100%;
+}
+
+.editor-content .note-editing-area {
+  height: calc(100% - 50px);
+}
+
+/* ========================================
+   EDITOR FOOTER - Apple Style
+   ======================================== */
+
+.editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.footer-info {
+    display: flex;
+    align-items: center;
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.footer-info i {
+  color: var(--btn-primary);
+}
+
+.footer-stats {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.footer-stats span {
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+}
+
+/* ========================================
+   SUMMERNOTE STYLES - Apple Style
+   ======================================== */
+
+.note-editor {
+  background-color: var(--surface-primary) !important;
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.note-toolbar {
+  background-color: var(--surface-secondary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+  padding: var(--space-3) var(--space-4) !important;
+  flex-shrink: 0 !important;
+}
+
+.note-toolbar .note-btn-group {
+  margin-right: var(--space-2) !important;
+}
+
+.note-toolbar .note-btn {
+  background-color: var(--surface-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-2) var(--space-3) !important;
+  transition: var(--transition-all) !important;
+}
+
+.note-toolbar .note-btn:hover {
+  background-color: var(--surface-tertiary) !important;
+  border-color: var(--btn-primary) !important;
+  color: var(--btn-primary) !important;
+}
+
+.note-toolbar .note-btn.active {
+  background-color: var(--btn-primary) !important;
+  border-color: var(--btn-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.note-editing-area {
+  background-color: var(--surface-primary) !important;
+  flex-grow: 1 !important;
+  height: auto !important;
+  width: 100% !important;
+}
+
+.note-editing-area .note-editable {
+  background-color: var(--surface-primary) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-family-primary) !important;
+  font-size: var(--text-base) !important;
+  line-height: 1.6 !important;
+  padding: var(--space-8) !important;
+  min-height: 500px !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-shadow: inset 0 0 0 1px var(--border-primary) !important;
+  border-radius: var(--radius-md) !important;
+  background-image: 
+    linear-gradient(to right, transparent 0px, transparent 39px, var(--border-primary) 40px, var(--border-primary) 40px),
+    linear-gradient(to bottom, transparent 0px, transparent 39px, var(--border-primary) 40px, var(--border-primary) 40px) !important;
+  background-size: 40px 40px !important;
+  background-position: 0 0, 0 0 !important;
+  position: relative !important;
+  overflow: auto !important;
+}
+
+.note-editing-area .note-editable:focus {
+  outline: none !important;
+}
+
+.note-editing-area .note-editable p {
+  margin-bottom: var(--space-3) !important;
+}
+
+.note-editing-area .note-editable h1,
+.note-editing-area .note-editable h2,
+.note-editing-area .note-editable h3,
+.note-editing-area .note-editable h4,
+.note-editing-area .note-editable h5,
+.note-editing-area .note-editable h6 {
+  color: var(--text-primary) !important;
+  margin-bottom: var(--space-4) !important;
+  margin-top: var(--space-5) !important;
+}
+
+.note-editing-area .note-editable h1 {
+  font-size: var(--text-3xl) !important;
+  font-weight: var(--font-semibold) !important;
+}
+
+.note-editing-area .note-editable h2 {
+  font-size: var(--text-2xl) !important;
+  font-weight: var(--font-semibold) !important;
+}
+
+.note-editing-area .note-editable h3 {
+  font-size: var(--text-xl) !important;
+  font-weight: var(--font-semibold) !important;
+}
+
+.note-editing-area .note-editable ul,
+.note-editing-area .note-editable ol {
+  margin-bottom: var(--space-4) !important;
+  padding-left: var(--space-6) !important;
+}
+
+.note-editing-area .note-editable li {
+  margin-bottom: var(--space-2) !important;
+  color: var(--text-primary) !important;
+}
+
+.note-editing-area .note-editable blockquote {
+  border-left: 4px solid var(--btn-primary) !important;
+  background-color: var(--surface-secondary) !important;
+  padding: var(--space-4) var(--space-6) !important;
+  margin: var(--space-5) 0 !important;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+  color: var(--text-secondary) !important;
+}
+
+.note-editing-area .note-editable code {
+  background-color: var(--surface-tertiary) !important;
+  color: var(--btn-primary) !important;
+  padding: var(--space-1) var(--space-2) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-family-mono) !important;
+  font-size: var(--text-sm) !important;
+}
+
+.note-editing-area .note-editable pre {
+  background-color: var(--surface-tertiary) !important;
+  color: var(--text-primary) !important;
+  padding: var(--space-4) !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border-primary) !important;
+  margin: var(--space-4) 0 !important;
+  overflow-x: auto !important;
+}
+
+.note-editing-area .note-editable pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+}
+
+.note-editing-area .note-editable table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: var(--space-4) 0 !important;
+  background-color: var(--surface-primary) !important;
+}
+
+.note-editing-area .note-editable table th,
+.note-editing-area .note-editable table td {
+  border: 1px solid var(--border-primary) !important;
+  padding: var(--space-3) var(--space-4) !important;
+  text-align: left !important;
+}
+
+.note-editing-area .note-editable table th {
+  background-color: var(--surface-secondary) !important;
+  color: var(--text-primary) !important;
+  font-weight: var(--font-semibold) !important;
+}
+
+.note-editing-area .note-editable table td {
+  color: var(--text-primary) !important;
+}
+
+.note-editing-area .note-editable img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  margin: var(--space-3) 0 !important;
+}
+
+/* ========================================
+   DROPDOWN STYLES - Apple Style
+   ======================================== */
+
+.note-dropdown-menu {
+  background-color: var(--surface-primary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: var(--space-2) !important;
+}
+
+.note-dropdown-menu .note-dropdown-item {
+  color: var(--text-primary) !important;
+  padding: var(--space-2) var(--space-3) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: var(--transition-all) !important;
+}
+
+.note-dropdown-menu .note-dropdown-item:hover {
+  background-color: var(--surface-secondary) !important;
+  color: var(--btn-primary) !important;
+}
+
+/* ========================================
+   MODAL STYLES - Apple Style
+   ======================================== */
+
+.note-modal {
+  background-color: var(--surface-primary) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.note-modal .modal-header {
+  background-color: var(--surface-secondary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.note-modal .modal-body {
+  background-color: var(--surface-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.note-modal .modal-footer {
+  background-color: var(--surface-secondary) !important;
+  border-top: 1px solid var(--border-primary) !important;
+}
+
+.note-modal .form-control {
+  background-color: var(--surface-secondary) !important;
+  border: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.note-modal .form-control:focus {
+  border-color: var(--btn-primary) !important;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1) !important;
+}
+
+/* ========================================
+   FORZAR TAMAÑO DEL EDITOR
+   ======================================== */
+
+.note-editor {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 500px !important;
+}
+
+.note-editing-area {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 500px !important;
+}
+
+.note-editable {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 500px !important;
+}
+
+/* Asegurar que el contenedor del editor ocupe todo el espacio */
+.editor-content {
+  min-height: 500px !important;
+}
+
+.editor-content .note-editor {
+  min-height: 500px !important;
+}
+
+@media (max-width: 768px) {
+  .editor-container {
+    padding: var(--space-2);
+    height: calc(100vh - 60px);
+  }
+
+  .editor-toolbar {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .editor-footer {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+
+    .note-toolbar {
+    padding: var(--space-2) var(--space-3) !important;
+    flex-wrap: wrap !important;
+  }
+
+  .note-toolbar .note-btn {
+    padding: var(--space-1) var(--space-2) !important;
+    font-size: var(--text-sm) !important;
+  }
+
+  .note-editing-area .note-editable {
+    padding: var(--space-4) !important;
+    min-height: 300px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .editor-container {
+    padding: var(--space-6);
+  }
+  
+  .note-editing-area .note-editable {
+    padding: var(--space-12) !important;
+  }
+}

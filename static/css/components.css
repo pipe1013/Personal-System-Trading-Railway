@@ -1,0 +1,1517 @@
+/* ========================================
+   APPLE-INSPIRED MINIMALIST COMPONENTS
+   ======================================== */
+
+/* ========================================
+   PAGE HEADERS - Apple Style
+   ======================================== */
+
+.page-header {
+  margin-bottom: var(--space-12);
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+}
+
+.page-title {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  letter-spacing: -0.02em;
+}
+
+.page-title i {
+  color: var(--btn-primary);
+  font-size: var(--text-3xl);
+}
+
+.page-subtitle {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-normal);
+}
+
+/* ========================================
+   CARDS - Minimalist Apple Style
+   ======================================== */
+
+.card {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  transition: var(--transition-all);
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-secondary);
+}
+
+.card-header {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.card-header i {
+  color: var(--btn-primary);
+  font-size: var(--text-lg);
+}
+
+/* ========================================
+   FORMS - Apple Style
+   ======================================== */
+
+.form-group {
+  margin-bottom: var(--space-8);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  letter-spacing: 0.01em;
+}
+
+.form-label i {
+  color: var(--btn-primary);
+  font-size: var(--text-base);
+}
+
+.form-control {
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-all);
+  font-family: var(--font-family-primary);
+}
+
+.form-control:focus {
+  color: var(--text-primary);
+  background-color: var(--surface-secondary);
+  border-color: var(--btn-primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-control::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: var(--surface-tertiary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-check {
+  position: relative;
+  display: block;
+  padding-left: var(--space-8);
+  margin-bottom: var(--space-4);
+}
+
+.form-check-input {
+  position: absolute;
+  left: 0;
+  top: 0.125rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.125rem;
+  vertical-align: top;
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  appearance: none;
+  border-radius: var(--radius-md);
+  transition: var(--transition-all);
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: var(--btn-primary);
+  border-color: var(--btn-primary);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.form-check-input:focus {
+  border-color: var(--btn-primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-check-label {
+  margin-bottom: 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+/* ========================================
+   BUTTONS - Apple Minimalist Style
+   ======================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  line-height: 1;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+  text-decoration: none;
+  border: 1px solid transparent;
+  gap: var(--space-2);
+  font-family: var(--font-family-primary);
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--btn-primary);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  color: var(--text-primary);
+  background-color: var(--btn-primary);
+  border-color: var(--btn-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover);
+  border-color: var(--btn-primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  color: var(--text-primary);
+  background-color: var(--btn-secondary);
+  border-color: var(--border-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--btn-secondary-hover);
+  border-color: var(--border-secondary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  color: var(--text-primary);
+  background-color: var(--btn-success);
+  border-color: var(--btn-success);
+}
+
+.btn-success:hover {
+  background-color: var(--btn-success-hover);
+  border-color: var(--btn-success-hover);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  color: var(--text-primary);
+  background-color: var(--btn-danger);
+  border-color: var(--btn-danger);
+}
+
+.btn-danger:hover {
+  background-color: var(--btn-danger-hover);
+  border-color: var(--btn-danger-hover);
+  transform: translateY(-1px);
+}
+
+.btn-warning {
+  color: var(--text-primary);
+  background-color: var(--btn-warning);
+  border-color: var(--btn-warning);
+}
+
+.btn-warning:hover {
+  background-color: var(--btn-warning-hover);
+  border-color: var(--btn-warning-hover);
+  transform: translateY(-1px);
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-xl);
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-md);
+}
+
+.w-100 {
+  width: 100%;
+}
+
+/* ========================================
+   MODALS - Apple Style
+   ======================================== */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-modal);
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  transition: opacity var(--transition-normal);
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  margin: auto;
+  pointer-events: none;
+  max-width: 500px;
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+  z-index: calc(var(--z-modal) + 1);
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: var(--surface-primary);
+  background-clip: padding-box;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-2xl);
+  outline: 0;
+  box-shadow: var(--shadow-2xl);
+}
+
+.modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-8);
+  border-bottom: 1px solid var(--border-primary);
+  border-top-left-radius: var(--radius-2xl);
+  border-top-right-radius: var(--radius-2xl);
+  background-color: var(--surface-secondary);
+}
+
+.modal-title {
+  margin-bottom: 0;
+  line-height: var(--leading-tight);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.modal-title i {
+  color: var(--btn-primary);
+}
+
+.modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  padding: var(--space-8);
+  color: var(--text-secondary);
+}
+
+.modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-6) var(--space-8);
+  border-top: 1px solid var(--border-primary);
+  border-bottom-right-radius: var(--radius-2xl);
+  border-bottom-left-radius: var(--radius-2xl);
+  background-color: var(--surface-secondary);
+  gap: var(--space-3);
+}
+
+.btn-close {
+  padding: var(--space-2);
+  margin: calc(-1 * var(--space-2));
+  background-color: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  opacity: 0.7;
+  transition: var(--transition-all);
+  color: var(--text-secondary);
+  font-size: var(--text-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+}
+
+.btn-close:hover {
+  color: var(--btn-danger);
+  opacity: 1;
+  background-color: var(--surface-tertiary);
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS - Apple Style
+   ======================================== */
+
+.toast-container {
+  position: fixed;
+  top: var(--space-8);
+  right: var(--space-8);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.toast {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-6);
+  max-width: 400px;
+  color: var(--text-primary);
+  animation: slideInRight 0.4s ease-out forwards;
+  transition: var(--transition-all);
+}
+
+.toast.success { border-left: 4px solid var(--btn-success); }
+.toast.error { border-left: 4px solid var(--btn-danger); }
+.toast.warning { border-left: 4px solid var(--btn-warning); }
+.toast.info { border-left: 4px solid var(--btn-primary); }
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.toast-title {
+  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.toast-title i {
+  font-size: var(--text-lg);
+}
+
+.toast.success .toast-title i { color: var(--btn-success); }
+.toast.error .toast-title i { color: var(--btn-danger); }
+.toast.warning .toast-title i { color: var(--btn-warning); }
+.toast.info .toast-title i { color: var(--btn-primary); }
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: var(--text-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+.toast-close:hover {
+  color: var(--text-primary);
+  background-color: var(--surface-tertiary);
+}
+
+.toast-body {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* ========================================
+   LOADING SPINNER - Apple Style
+   ======================================== */
+
+.loading-spinner {
+  border: 3px solid var(--border-primary);
+  border-top: 3px solid var(--btn-primary);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   MOBILE MENU TOGGLE - Apple Style
+   ======================================== */
+
+.mobile-menu-toggle {
+  position: fixed;
+  top: var(--space-6);
+  left: var(--space-6);
+  z-index: calc(var(--z-fixed) + 1);
+  background-color: var(--btn-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xl);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.mobile-menu-toggle:hover {
+  background-color: var(--btn-primary-hover);
+  transform: scale(1.05);
+}
+
+/* ========================================
+   FLOATING MENU TOGGLE - Apple Style
+   ======================================== */
+
+.floating-menu-toggle {
+  position: fixed;
+  top: var(--space-6);
+  right: var(--space-6);
+  z-index: calc(var(--z-fixed) + 1);
+  background-color: var(--btn-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xl);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+  backdrop-filter: blur(20px);
+}
+
+.floating-menu-toggle:hover {
+  background-color: var(--btn-primary-hover);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-xl);
+}
+
+.floating-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Responsive floating button */
+@media (max-width: 768px) {
+  .floating-menu-toggle {
+    width: 44px;
+    height: 44px;
+    font-size: var(--text-lg);
+  }
+}
+
+/* ========================================
+   ANIMATIONS - Apple Style
+   ======================================== */
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+/* ========================================
+   TRADING ANIMATIONS SYSTEM - Apple Style
+   ======================================== */
+
+.trading-animations-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  pointer-events: none;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+}
+
+.trading-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: animationEntrance 1s ease-out;
+  display: none;
+  opacity: 1;
+  visibility: visible;
+}
+
+.trading-animation.active {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+@keyframes animationEntrance {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotateY(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+  }
+}
+
+/* ========================================
+   ANIMATION 1: TRADING PHONE
+   ======================================== */
+
+@keyframes phoneEntrance {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5) rotateY(-180deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1) rotateY(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+  }
+}
+
+.phone-container {
+  position: relative;
+  perspective: 1000px;
+}
+
+.phone {
+  width: 200px;
+  height: 400px;
+  background: linear-gradient(145deg, #2c2c2e, #1c1c1e);
+  border-radius: 30px;
+  padding: 20px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  animation: phoneFloat 3s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes phoneFloat {
+  0%, 100% {
+    transform: translateY(0px) rotateX(5deg) rotateY(5deg);
+  }
+  50% {
+    transform: translateY(-10px) rotateX(-5deg) rotateY(-5deg);
+  }
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.trading-app {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+}
+
+.app-header {
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.signal-battery {
+  display: flex;
+  gap: 5px;
+}
+
+.signal {
+  width: 15px;
+  height: 10px;
+  background: #34c759;
+  border-radius: 2px;
+}
+
+.battery {
+  width: 20px;
+  height: 10px;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  position: relative;
+}
+
+.battery::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 3px;
+  width: 2px;
+  height: 4px;
+  background: #fff;
+  border-radius: 0 1px 1px 0;
+}
+
+.app-title {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.chart-area {
+  height: 120px;
+  position: relative;
+  background: linear-gradient(45deg, #0a0a0a, #1a1a1a);
+  margin: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.chart-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, #34c759, #30d158);
+  border-radius: 1px;
+  animation: chartMove 2s ease-in-out infinite;
+}
+
+.chart-line:nth-child(1) {
+  width: 60%;
+  top: 30%;
+  animation-delay: 0s;
+}
+
+.chart-line:nth-child(2) {
+  width: 80%;
+  top: 50%;
+  animation-delay: 0.5s;
+}
+
+.chart-line:nth-child(3) {
+  width: 70%;
+  top: 70%;
+  animation-delay: 1s;
+}
+
+@keyframes chartMove {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.price-display {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-align: right;
+}
+
+.price {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #34c759;
+}
+
+.change {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.change.positive {
+  color: #34c759;
+}
+
+.change.negative {
+  color: #ff3b30;
+}
+
+.trading-buttons {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  justify-content: center;
+}
+
+.trade-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: buttonPulse 2s ease-in-out infinite;
+}
+
+.trade-btn.buy {
+  background: #34c759;
+  color: white;
+}
+
+.trade-btn.sell {
+  background: #ff3b30;
+  color: white;
+}
+
+@keyframes buttonPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(52, 199, 89, 0);
+  }
+}
+
+.orders-list {
+  padding: 0 15px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+}
+
+.order-type {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.order-type.buy {
+  background: rgba(52, 199, 89, 0.2);
+  color: #34c759;
+}
+
+.order-type.sell {
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+}
+
+.order-status {
+  color: #34c759;
+  font-weight: 500;
+}
+
+/* Trading particles */
+.trading-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #34c759;
+  border-radius: 50%;
+  animation: particleFloat 3s ease-in-out infinite;
+}
+
+.particle:nth-child(1) {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+  top: 40%;
+  right: 15%;
+  animation-delay: 0.5s;
+}
+
+.particle:nth-child(3) {
+  bottom: 30%;
+  left: 20%;
+  animation-delay: 1s;
+}
+
+.particle:nth-child(4) {
+  top: 60%;
+  right: 25%;
+  animation-delay: 1.5s;
+}
+
+.particle:nth-child(5) {
+  bottom: 20%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.particle:nth-child(6) {
+  top: 30%;
+  left: 30%;
+  animation-delay: 2.5s;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Success indicators */
+.success-indicators {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+}
+
+.success-icon {
+  font-size: 24px;
+  animation: successBounce 2s ease-in-out infinite;
+}
+
+.success-icon:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.success-icon:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.success-icon:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes successBounce {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+  }
+}
+
+/* Auto-hide animation */
+.trading-phone-animation {
+  animation: phoneEntrance 1.5s ease-out, phoneExit 0.5s ease-in 4.5s forwards;
+}
+
+@keyframes phoneExit {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotateY(180deg);
+  }
+}
+
+/* ========================================
+   ANIMATION 2: TRADING DASHBOARD
+   ======================================== */
+
+.dashboard-container {
+  position: relative;
+  perspective: 1000px;
+}
+
+.dashboard-screen {
+  width: 300px;
+  height: 200px;
+  background: linear-gradient(145deg, #1c1c1e, #2c2c2e);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  animation: dashboardFloat 3s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes dashboardFloat {
+  0%, 100% {
+    transform: translateY(0px) rotateX(3deg) rotateY(3deg);
+  }
+  50% {
+    transform: translateY(-8px) rotateX(-3deg) rotateY(-3deg);
+  }
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.dashboard-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.dashboard-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #34c759;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  background: #34c759;
+  border-radius: 50%;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.dashboard-charts {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.mini-chart {
+  flex: 1;
+  height: 40px;
+  background: linear-gradient(45deg, #0a0a0a, #1a1a1a);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-line-mini {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, #34c759, #30d158);
+  border-radius: 1px;
+  animation: chartMoveMini 2s ease-in-out infinite;
+}
+
+.chart-line-mini:nth-child(1) {
+  width: 60%;
+  top: 30%;
+  animation-delay: 0s;
+}
+
+.chart-line-mini:nth-child(2) {
+  width: 80%;
+  top: 50%;
+  animation-delay: 0.5s;
+}
+
+.chart-line-mini:nth-child(3) {
+  width: 70%;
+  top: 70%;
+  animation-delay: 1s;
+}
+
+@keyframes chartMoveMini {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.dashboard-metrics {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.metric {
+  text-align: center;
+  flex: 1;
+}
+
+.metric-label {
+  display: block;
+  font-size: 10px;
+  color: #8e8e93;
+  margin-bottom: 2px;
+}
+
+.metric-value {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.metric-value.positive {
+  color: #34c759;
+}
+
+.floating-elements {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+}
+
+.floating-icon {
+  font-size: 20px;
+  animation: floatingBounce 2s ease-in-out infinite;
+}
+
+.floating-icon:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.floating-icon:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.floating-icon:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes floatingBounce {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.1);
+  }
+}
+
+/* ========================================
+   ANIMATION 3: CRYPTO TRADING
+   ======================================== */
+
+.crypto-container {
+  position: relative;
+  perspective: 1000px;
+}
+
+.crypto-screen {
+  width: 250px;
+  height: 180px;
+  background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 
+    0 15px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  animation: cryptoFloat 3s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes cryptoFloat {
+  0%, 100% {
+    transform: translateY(0px) rotateX(4deg) rotateY(4deg);
+  }
+  50% {
+    transform: translateY(-6px) rotateX(-4deg) rotateY(-4deg);
+  }
+}
+
+.crypto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.crypto-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.crypto-symbol {
+  font-size: 12px;
+  color: #ff9500;
+  font-weight: 500;
+}
+
+.crypto-chart {
+  height: 60px;
+  position: relative;
+  background: linear-gradient(45deg, #0a0a0a, #1a1a1a);
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.crypto-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, #ff9500, #ffad33);
+  border-radius: 1px;
+  animation: cryptoChartMove 2s ease-in-out infinite;
+}
+
+.crypto-line:nth-child(1) {
+  width: 70%;
+  top: 30%;
+  animation-delay: 0s;
+}
+
+.crypto-line:nth-child(2) {
+  width: 85%;
+  top: 50%;
+  animation-delay: 0.5s;
+}
+
+.crypto-line:nth-child(3) {
+  width: 75%;
+  top: 70%;
+  animation-delay: 1s;
+}
+
+@keyframes cryptoChartMove {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.crypto-price {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  text-align: right;
+}
+
+.crypto-value {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff9500;
+}
+
+.crypto-change {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.crypto-change.positive {
+  color: #34c759;
+}
+
+.crypto-change.negative {
+  color: #ff3b30;
+}
+
+.crypto-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.crypto-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: cryptoButtonPulse 2s ease-in-out infinite;
+}
+
+.crypto-btn.buy {
+  background: #34c759;
+  color: white;
+}
+
+.crypto-btn.sell {
+  background: #ff3b30;
+  color: white;
+}
+
+@keyframes cryptoButtonPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(255, 149, 0, 0);
+  }
+}
+
+.crypto-particles {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.crypto-particle {
+  font-size: 18px;
+  animation: cryptoParticleFloat 2s ease-in-out infinite;
+}
+
+.crypto-particle:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.crypto-particle:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.crypto-particle:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+@keyframes cryptoParticleFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-12px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .phone {
+    width: 150px;
+    height: 300px;
+    padding: 15px;
+  }
+  
+  .dashboard-screen {
+    width: 250px;
+    height: 160px;
+    padding: 15px;
+  }
+  
+  .crypto-screen {
+    width: 200px;
+    height: 150px;
+    padding: 12px;
+  }
+  
+  .success-indicators {
+    top: -40px;
+  }
+  
+  .success-icon {
+    font-size: 20px;
+  }
+  
+  .floating-elements {
+    top: -25px;
+  }
+  
+  .floating-icon {
+    font-size: 16px;
+  }
+  
+  .crypto-particles {
+    top: -20px;
+  }
+  
+  .crypto-particle {
+    font-size: 14px;
+  }
+  
+  .animation-toggle-btn {
+    bottom: var(--space-4);
+    right: var(--space-4);
+    padding: 10px 16px;
+    font-size: var(--text-xs);
+  }
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: var(--space-6) var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+  }
+
+  .page-subtitle {
+    font-size: var(--text-base);
+  }
+
+  .btn-lg {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-base);
+  }
+
+  .toast-container {
+    top: var(--space-6);
+    right: var(--space-6);
+    left: var(--space-6);
+    max-width: calc(100% - var(--space-12));
+  }
+
+  .modal-dialog {
+    margin: var(--space-8) var(--space-4);
+    max-width: calc(100% - var(--space-8));
+  }
+
+  .card {
+    padding: var(--space-6);
+  }
+}

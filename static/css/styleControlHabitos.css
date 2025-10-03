@@ -1,0 +1,254 @@
+/* ========================================
+   CONTROL DE HÁBITOS - APPLE MINIMALIST STYLE
+   ======================================== */
+
+.habits-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-8);
+}
+
+/* ========================================
+   HABITS CONTROLS - Apple Style
+   ======================================== */
+
+.habits-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-8);
+}
+
+.habits-controls .control-card {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-all);
+  width: 100%;
+  max-width: 600px;
+}
+
+.habits-controls .control-card:hover {
+  border-color: var(--border-secondary);
+}
+
+.habits-controls .control-actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  margin-top: var(--space-6);
+}
+
+.habits-controls .btn {
+  flex-grow: 1;
+  min-width: 180px;
+}
+
+/* ========================================
+   HABITS GRID - Apple Style
+   ======================================== */
+
+.habits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-8);
+}
+
+.habit-card {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-all);
+}
+
+.habit-card:hover {
+  border-color: var(--border-secondary);
+  transform: translateY(-1px);
+}
+
+.habit-header {
+  margin-bottom: var(--space-6);
+}
+
+.habit-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.habit-title i {
+  color: var(--btn-primary);
+  font-size: var(--text-lg);
+}
+
+.habit-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 8px;
+  background-color: var(--surface-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--btn-primary) 0%, var(--btn-primary-hover) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease-out;
+  width: 0%;
+}
+
+.progress-text {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  min-width: 40px;
+  text-align: right;
+}
+
+.habit-body {
+  flex-grow: 1;
+}
+
+/* ========================================
+   DAYS GRID - Apple Style
+   ======================================== */
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: var(--space-2);
+  justify-items: center;
+}
+
+.day-item {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-all);
+  position: relative;
+  overflow: hidden;
+}
+
+.day-item:hover {
+  background-color: var(--surface-tertiary);
+  border-color: var(--btn-primary);
+  transform: scale(1.05);
+}
+
+.day-item.completed {
+  background-color: var(--btn-success);
+  border-color: var(--btn-success);
+  color: var(--text-primary);
+}
+
+.day-item.completed .day-number {
+  color: var(--text-primary);
+}
+
+.day-number {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  z-index: 1;
+}
+
+.day-status {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--btn-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: var(--transition-all);
+  z-index: 0;
+}
+
+.day-item.completed .day-status {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  .habits-container {
+    padding: var(--space-6) var(--space-4);
+    gap: var(--space-8);
+  }
+
+  .habits-controls .control-card {
+    padding: var(--space-6);
+  }
+
+  .habits-controls .control-actions {
+    flex-direction: column;
+  }
+
+  .habits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .habit-card {
+    padding: var(--space-6);
+  }
+
+  .habit-title {
+    font-size: var(--text-lg);
+  }
+
+  .day-item {
+    width: 36px;
+    height: 36px;
+  }
+
+  .day-number {
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .habits-container {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .habit-card {
+    padding: var(--space-4);
+  }
+
+  .day-item {
+    width: 32px;
+    height: 32px;
+  }
+}

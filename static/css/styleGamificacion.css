@@ -1,0 +1,315 @@
+/* ========================================
+   GAMIFICACIÓN - APPLE MINIMALIST STYLE
+   ======================================== */
+
+.gamification-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-8);
+}
+
+/* ========================================
+   MONTH SELECTOR - Apple Style
+   ======================================== */
+
+.month-selector {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-8);
+}
+
+.month-selector .selector-card {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-all);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.month-selector .selector-card:hover {
+  border-color: var(--border-secondary);
+}
+
+.month-selector .selector-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.month-selector .selector-title i {
+  color: var(--btn-primary);
+  font-size: var(--text-xl);
+}
+
+.month-selector .selector-subtitle {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-8);
+  line-height: var(--leading-relaxed);
+}
+
+.month-selector .selector-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ========================================
+   GOALS CONTAINER - Apple Style
+   ======================================== */
+
+.goals-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.goals-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.goals-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  letter-spacing: -0.02em;
+}
+
+.goals-title i {
+  color: var(--btn-primary);
+  font-size: var(--text-2xl);
+}
+
+.goals-subtitle {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-8);
+}
+
+.goal-card {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-all);
+}
+
+.goal-card:hover {
+  border-color: var(--border-secondary);
+  transform: translateY(-1px);
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.goal-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.goal-title i {
+  color: var(--btn-primary);
+  font-size: var(--text-lg);
+}
+
+.achievement-badge {
+  background-color: var(--btn-success);
+  color: var(--text-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.achievement-badge i {
+  font-size: var(--text-base);
+}
+
+.goal-body {
+  flex-grow: 1;
+}
+
+/* ========================================
+   PROGRESS SECTION - Apple Style
+   ======================================== */
+
+.progress-section {
+  margin-bottom: var(--space-6);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.progress-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
+}
+
+.progress-percentage {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.progress-bar-container {
+  height: 10px;
+  background-color: var(--surface-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--btn-primary) 0%, var(--btn-primary-hover) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.8s ease-out;
+  position: relative;
+}
+
+.progress-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  opacity: 0;
+  animation: progressGlow 2s infinite ease-out;
+}
+
+@keyframes progressGlow {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+/* ========================================
+   MESSAGES - Apple Style
+   ======================================== */
+
+.celebration-message,
+.motivation-message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.celebration-message {
+  background-color: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-200);
+}
+
+.celebration-message i {
+  color: var(--success-500);
+}
+
+.motivation-message {
+  background-color: var(--primary-50);
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+}
+
+.motivation-message i {
+  color: var(--primary-500);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  .gamification-container {
+    padding: var(--space-6) var(--space-4);
+    gap: var(--space-8);
+  }
+
+  .month-selector .selector-card {
+    padding: var(--space-6);
+  }
+
+  .month-selector .selector-title {
+    font-size: var(--text-xl);
+  }
+
+  .goals-title {
+    font-size: var(--text-2xl);
+  }
+
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-card {
+    padding: var(--space-6);
+  }
+
+  .goal-title {
+    font-size: var(--text-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .gamification-container {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .goal-card {
+    padding: var(--space-4);
+  }
+
+  .celebration-message,
+  .motivation-message {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+  }
+}

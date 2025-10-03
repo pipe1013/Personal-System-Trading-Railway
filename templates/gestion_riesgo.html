@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styleRisk.css') }}">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.risk-card:nth-child(1) { animation-delay: 0.1s; }
+.risk-card:nth-child(2) { animation-delay: 0.2s; }
+.drawdown-section { animation-delay: 0.3s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="risk-container">
+    <!-- Header -->
+    <div class="risk-header">
+        <h1 class="risk-title">
+            <i class="bi bi-shield-check me-3"></i>
+            Gestión de Riesgo
+        </h1>
+        <p class="risk-subtitle">Calcula el lotaje óptimo y analiza el drawdown de tus operaciones</p>
+    </div>
+
+    <!-- Risk Cards -->
+    <div class="risk-cards">
+        <!-- Control de Exposición -->
+        <div class="risk-card">
+            <div class="risk-card-header">
+                <div class="risk-card-icon">
+                    <i class="bi bi-calculator"></i>
+                </div>
+                <h2 class="risk-card-title">Control de Exposición</h2>
+            </div>
+            
+            <form id="exposureForm">
+                <div class="form-group">
+                    <label for="capital" class="form-label">
+                        <i class="bi bi-currency-dollar me-2"></i>
+                        Capital Disponible ($)
+                    </label>
+                    <input type="number" id="capital" class="form-input" placeholder="Ejemplo: 10000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="riskPercentage" class="form-label">
+                        <i class="bi bi-percent me-2"></i>
+                        Riesgo por Operación (%)
+                    </label>
+                    <input type="number" id="riskPercentage" class="form-input" placeholder="Ejemplo: 2" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="stopLossPips" class="form-label">
+                        <i class="bi bi-stop-circle me-2"></i>
+                        Stop Loss (Pips)
+                    </label>
+                    <input type="number" id="stopLossPips" class="form-input" placeholder="Ejemplo: 50" required>
+                </div>
+
+                <button type="button" class="btn-calculate" onclick="calcularLotaje()">
+                    <i class="bi bi-calculator me-2"></i>
+                    Calcular Lotaje
+                </button>
+            </form>
+
+            <div id="lotajeResultado" class="result-container" style="display: none;">
+                <h3 class="result-title">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Resultado del Cálculo
+                </h3>
+                <p class="result-value" id="lotajeText"></p>
+                <p class="result-description">Este es el lotaje recomendado basado en tu capital y nivel de riesgo</p>
+            </div>
+        </div>
+
+        <!-- Análisis de Drawdown -->
+        <div class="risk-card">
+            <div class="risk-card-header">
+                <div class="risk-card-icon">
+                    <i class="bi bi-graph-down"></i>
+                </div>
+                <h2 class="risk-card-title">Análisis de Drawdown</h2>
+            </div>
+            
+            <form id="drawdownForm">
+                <div class="form-group">
+                    <label for="balances" class="form-label">
+                        <i class="bi bi-list-ol me-2"></i>
+                        Historial de Balances
+                    </label>
+                    <input type="text" id="balances" class="form-input" placeholder="Ejemplo: 1000, 950, 980, 920, 1100" required>
+                    <p class="result-description">Ingresa los valores separados por comas</p>
+                </div>
+
+                <button type="button" class="btn-calculate" onclick="generarDrawdown()">
+                    <i class="bi bi-graph-down me-2"></i>
+                    Generar Drawdown
+                </button>
+            </form>
+
+            <div id="mensajeCargando" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Generando gráfico de drawdown...</p>
+            </div>
+
+            <button type="button" id="verGraficoButton" class="btn-calculate" style="display: none; margin-top: var(--space-4);" onclick="verGrafico()">
+                <i class="bi bi-eye me-2"></i>
+                Ver Gráfico
+            </button>
+        </div>
+    </div>
+
+    <!-- Drawdown Section -->
+    <div class="drawdown-section">
+        <div class="drawdown-header">
+            <div class="drawdown-icon">
+                <i class="bi bi-bar-chart"></i>
+            </div>
+            <div>
+                <h2 class="drawdown-title">Análisis Visual de Drawdown</h2>
+                <p class="drawdown-description">Visualiza la evolución de tu capital y identifica períodos de pérdidas</p>
+            </div>
+        </div>
+
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <h3 class="chart-title">Gráfico de Drawdown</h3>
+            <div id="drawdownChart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal del gráfico -->
+<div id="graficoModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="cerrarModal()">&times;</span>
+        <h3 class="chart-title">Análisis de Drawdown</h3>
+        <div id="drawdownChartModal" style="width: 100%; height: 500px;"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function calcularLotaje() {
+        const capital = parseFloat(document.getElementById('capital').value);
+        const riskPercentage = parseFloat(document.getElementById('riskPercentage').value);
+        const stopLossPips = parseFloat(document.getElementById('stopLossPips').value);
+
+        if (isNaN(capital) || isNaN(riskPercentage) || isNaN(stopLossPips) || capital <= 0 || riskPercentage <= 0 || stopLossPips <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de Validación',
+                text: 'Por favor, ingresa valores válidos para todos los campos.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#007AFF'
+            });
+            return;
+        }
+
+        const riesgoPorOperacion = (capital * riskPercentage) / 100;
+        const valorPip = riesgoPorOperacion / stopLossPips;
+
+        document.getElementById('lotajeResultado').style.display = 'block';
+        document.getElementById('lotajeText').innerText = `${valorPip.toFixed(2)} lotes`;
+
+        // Animación de éxito
+        Swal.fire({
+            icon: 'success',
+            title: 'Cálculo Completado',
+            text: `Lotaje recomendado: ${valorPip.toFixed(2)} lotes`,
+            timer: 2000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+    }
+
+    function generarDrawdown() {
+        const balancesInput = document.getElementById('balances').value;
+        if (!balancesInput) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de Validación',
+                text: 'Por favor, ingresa el historial de balances.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#007AFF'
+            });
+            return;
+        }
+
+        const balances = balancesInput.split(',').map(Number);
+        if (balances.some(isNaN) || balances.length < 2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de Validación',
+                text: 'Por favor, ingresa un historial de balances válido (al menos dos valores numéricos).',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#007AFF'
+            });
+            return;
+        }
+
+        document.getElementById('mensajeCargando').style.display = 'flex';
+        document.getElementById('verGraficoButton').style.display = 'none';
+
+        // Simular procesamiento
+        setTimeout(function() {
+            document.getElementById('mensajeCargando').style.display = 'none';
+            document.getElementById('verGraficoButton').style.display = 'flex';
+            document.getElementById('chartContainer').style.display = 'block';
+            
+            // Generar gráfico
+            generarGraficoDrawdown(balances);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Gráfico Generado',
+                text: 'El análisis de drawdown se ha completado exitosamente.',
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        }, 1500);
+    }
+
+    function generarGraficoDrawdown(balances) {
+        const fechas = [];
+        const drawdowns = [];
+        let maxBalance = balances[0];
+        
+        for (let i = 0; i < balances.length; i++) {
+            fechas.push(`Período ${i + 1}`);
+            
+            if (balances[i] > maxBalance) {
+                maxBalance = balances[i];
+            }
+            
+            const drawdown = ((maxBalance - balances[i]) / maxBalance) * 100;
+            drawdowns.push(drawdown);
+        }
+
+        const trace1 = {
+            x: fechas,
+            y: balances,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Balance',
+            line: { color: '#34C759', width: 3 },
+            marker: { size: 8, color: '#34C759' }
+        };
+
+        const trace2 = {
+            x: fechas,
+            y: drawdowns,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Drawdown %',
+            yaxis: 'y2',
+            line: { color: '#FF3B30', width: 3 },
+            marker: { size: 8, color: '#FF3B30' }
+        };
+
+        const layout = {
+            title: {
+                text: 'Análisis de Drawdown',
+                font: { size: 18, color: '#1D1D1F' }
+            },
+            xaxis: {
+                title: 'Períodos',
+                gridcolor: '#D1D1D6',
+                color: '#1D1D1F'
+            },
+            yaxis: {
+                title: 'Balance ($)',
+                gridcolor: '#D1D1D6',
+                color: '#1D1D1F'
+            },
+            yaxis2: {
+                title: 'Drawdown (%)',
+                overlaying: 'y',
+                side: 'right',
+                gridcolor: '#D1D1D6',
+                color: '#1D1D1F'
+            },
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: '-apple-system, BlinkMacSystemFont, sans-serif' },
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: '#D1D1D6',
+                borderwidth: 1
+            }
+        };
+
+        Plotly.newPlot('drawdownChart', [trace1, trace2], layout, {responsive: true});
+    }
+
+    function verGrafico() {
+        document.getElementById('graficoModal').style.display = 'block';
+        
+        // Copiar el gráfico al modal
+        const balancesInput = document.getElementById('balances').value;
+        const balances = balancesInput.split(',').map(Number);
+        generarGraficoDrawdownModal(balances);
+    }
+
+    function generarGraficoDrawdownModal(balances) {
+        const fechas = [];
+        const drawdowns = [];
+        let maxBalance = balances[0];
+        
+        for (let i = 0; i < balances.length; i++) {
+            fechas.push(`Período ${i + 1}`);
+            
+            if (balances[i] > maxBalance) {
+                maxBalance = balances[i];
+            }
+            
+            const drawdown = ((maxBalance - balances[i]) / maxBalance) * 100;
+            drawdowns.push(drawdown);
+        }
+
+        const trace1 = {
+            x: fechas,
+            y: balances,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Balance',
+            line: { color: '#34C759', width: 4 },
+            marker: { size: 10, color: '#34C759' }
+        };
+
+        const trace2 = {
+            x: fechas,
+            y: drawdowns,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Drawdown %',
+            yaxis: 'y2',
+            line: { color: '#FF3B30', width: 4 },
+            marker: { size: 10, color: '#FF3B30' }
+        };
+
+        const layout = {
+            title: {
+                text: 'Análisis Detallado de Drawdown',
+                font: { size: 20, color: '#1D1D1F' }
+            },
+            xaxis: {
+                title: 'Períodos',
+                gridcolor: '#D1D1D6',
+                color: '#1D1D1F'
+            },
+            yaxis: {
+                title: 'Balance ($)',
+                gridcolor: '#D1D1D6',
+                color: '#1D1D1F'
+            },
+            yaxis2: {
+                title: 'Drawdown (%)',
+                overlaying: 'y',
+                side: 'right',
+                gridcolor: '#D1D1D6',
+                color: '#1D1D1F'
+            },
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: '-apple-system, BlinkMacSystemFont, sans-serif' },
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255,255,255,0.9)',
+                bordercolor: '#D1D1D6',
+                borderwidth: 1
+            }
+        };
+
+        Plotly.newPlot('drawdownChartModal', [trace1, trace2], layout, {responsive: true});
+    }
+
+    function cerrarModal() {
+        document.getElementById('graficoModal').style.display = 'none';
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = function(event) {
+        const modal = document.getElementById('graficoModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

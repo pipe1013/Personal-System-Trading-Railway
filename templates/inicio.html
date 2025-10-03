@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styleInicio.css') }}">
+<style>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.chart-container {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.selector-container {
+    animation: slideInRight 0.8s ease-out;
+}
+
+.btn-ejecutar {
+    animation: pulse 2s infinite;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="bi bi-graph-up-arrow me-3"></i>
+        Visualización de Mercados en Vivo
+    </h1>
+    <p class="page-subtitle">Monitorea los mercados financieros en tiempo real con gráficos profesionales</p>
+</div>
+
+<!-- Subtle Trading Animation -->
+<div class="subtle-trading-animation">
+    <div class="floating-chart">
+        <div class="mini-trading-line"></div>
+        <div class="mini-trading-line"></div>
+        <div class="mini-trading-line"></div>
+    </div>
+    <div class="floating-price">$1,234.56</div>
+    <div class="floating-change positive">+2.34%</div>
+</div>
+
+<div class="chart-container">
+    <!-- Selector de índices y temporalidad -->
+    <div class="selector-container">
+        <div class="selector-card">
+            <div class="selector-group">
+                <label for="indice" class="form-label">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Selecciona un índice sintético
+                </label>
+                <select id="indice" class="form-control">
+                    <option value="">Selecciona un índice</option>
+                    {% for key, value in indices_sinteticos.items() %}
+                        <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="selector-group">
+                <label for="temporalidad" class="form-label">
+                    <i class="bi bi-clock me-2"></i>
+                    Selecciona la temporalidad
+                </label>
+                <select id="temporalidad" class="form-control">
+                    <option value="1">M1 - 1 Minuto</option>
+                    <option value="5">M5 - 5 Minutos</option>
+                    <option value="15">M15 - 15 Minutos</option>
+                    <option value="30">M30 - 30 Minutos</option>
+                    <option value="60">H1 - 1 Hora</option>
+                    <option value="240">H4 - 4 Horas</option>
+                </select>
+            </div>
+
+            <div class="selector-actions">
+                <button id="verGraficoButton" class="btn btn-primary btn-lg btn-ejecutar" onclick="verGrafico()">
+                    <i class="bi bi-play-circle me-2"></i>
+                    Ver Gráfico en Vivo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del gráfico -->
+    <div id="graficoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h3 id="chartTitle">Gráfico en Vivo</h3>
+                    <div id="last-update" class="last-update">Última actualización: --:--:--</div>
+                </div>
+                <div class="modal-controls">
+                    <div class="timeframe-controls">
+                        <button onclick="changeTimeframe('1')" class="timeframe-btn">1m</button>
+                        <button onclick="changeTimeframe('5')" class="timeframe-btn">5m</button>
+                        <button onclick="changeTimeframe('15')" class="timeframe-btn">15m</button>
+                        <button onclick="changeTimeframe('30')" class="timeframe-btn">30m</button>
+                        <button onclick="changeTimeframe('60')" class="timeframe-btn">1H</button>
+                        <button onclick="changeTimeframe('240')" class="timeframe-btn">4H</button>
+                    </div>
+                    <div class="chart-controls">
+                        <button onclick="addIndicator('ma')" class="btn btn-sm btn-secondary" title="Add Moving Average">
+                            <i class="bi bi-graph-up"></i> MA
+                        </button>
+                        <button onclick="addIndicator('bollinger')" class="btn btn-sm btn-secondary" title="Add Bollinger Bands">
+                            <i class="bi bi-graph-down"></i> BB
+                        </button>
+                        <button onclick="enableDraw('trendline')" class="btn btn-sm btn-secondary" title="Trend Line">
+                            <i class="bi bi-diagram-3"></i>
+                        </button>
+                        <button onclick="enableDraw('horizontal')" class="btn btn-sm btn-secondary" title="Horizontal Line">
+                            <i class="bi bi-horizontal-rule"></i>
+                        </button>
+                        <button onclick="clearDrawings()" class="btn btn-sm btn-danger" title="Clear All">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="close" onclick="cerrarModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div id="tradingChart" class="chart-area"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let intervalo, chart, candlestickSeries, currentIndice, currentTemporalidad;
+
+    function generateDummyData(temporalidad) {
+        const data = [];
+        const now = Math.floor(Date.now() / 1000);
+        let basePrice = 100;
+
+        // Determinar cantidad de velas basado en temporalidad
+        let intervals, timeStep;
+        switch(temporalidad) {
+            case '1': intervals = 300; timeStep = 60; break;      // 5 horas de 1m
+            case '5': intervals = 200; timeStep = 300; break;     // ~17 horas de 5m
+            case '15': intervals = 150; timeStep = 900; break;    // ~37 horas de 15m
+            case '30': intervals = 120; timeStep = 1800; break;   // ~60 horas de 30m
+            case '60': intervals = 100; timeStep = 3600; break;   // ~4 días de 1H
+            case '240': intervals = 80; timeStep = 14400; break;  // ~13 días de 4H
+            default: intervals = 180; timeStep = 60;
+        }
+
+        for (let i = intervals; i >= 0; i--) {
+            const time = now - (i * timeStep);
+            const open = basePrice;
+            const close = open + (Math.random() - 0.5) * 4;
+            const high = Math.max(open, close) + Math.random() * 2;
+            const low = Math.min(open, close) - Math.random() * 2;
+            data.push({
+                time: time,
+                open: parseFloat(open.toFixed(2)),
+                high: parseFloat(high.toFixed(2)),
+                low: parseFloat(low.toFixed(2)),
+                close: parseFloat(close.toFixed(2))
+            });
+            basePrice = close;
+        }
+        return data;
+    }
+
+    function verGrafico() {
+        const indice = document.getElementById('indice').value;
+        const temporalidad = document.getElementById('temporalidad').value;
+        currentIndice = indice;
+        currentTemporalidad = temporalidad;
+
+        if (!indice || !temporalidad) {
+            alert("Por favor, selecciona un índice y una temporalidad.");
+            return;
+        }
+
+        // Mostrar la ventana modal
+        const modal = document.getElementById("graficoModal");
+        const chartTitle = document.getElementById("chartTitle");
+        chartTitle.textContent = `Gráfico en Vivo - ${indice}`;
+        modal.style.display = "block";
+
+        // Limpiar cualquier intervalo anterior
+        if (intervalo) {
+            clearInterval(intervalo);
+        }
+
+        // Datos dummy iniciales basados en temporalidad
+        const dummyData = generateDummyData(temporalidad);
+
+        // Inicializar el gráfico con Lightweight Charts - Tema Oscuro TradingView
+        chart = LightweightCharts.createChart(document.getElementById('tradingChart'), {
+            layout: {
+                background: { color: '#131722' },
+                textColor: '#D1D4DC',
+                fontSize: 12,
+                fontFamily: 'Roboto, sans-serif',
+            },
+            grid: {
+                vertLines: { color: '#2A2E39' },
+                horzLines: { color: '#2A2E39' },
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+                vertLine: { color: '#758696', width: 1 },
+                horzLine: { color: '#758696', width: 1 },
+            },
+            rightPriceScale: {
+                borderColor: '#2A2E39',
+                textColor: '#D1D4DC',
+            },
+            timeScale: {
+                borderColor: '#2A2E39',
+                textColor: '#D1D4DC',
+                timeVisible: true,
+                secondsVisible: false,
+            },
+            handleScroll: {
+                mouseWheel: true,
+                pressedMouseMove: true,
+            },
+            handleScale: {
+                axisPressedMouseMove: true,
+                mouseWheel: true,
+                pinch: true,
+            },
+        });
+
+        const candlestickSeries = chart.addCandlestickSeries({
+            upColor: '#26A69A',
+            downColor: '#EF5350',
+            borderVisible: true,
+            borderUpColor: '#1e5b4f',
+            borderDownColor: '#b33d3d',
+            wickUpColor: '#26A69A',
+            wickDownColor: '#EF5350',
+        });
+
+        candlestickSeries.setData(dummyData);
+
+        // Añadir línea de precio actual
+        const priceLine = {
+            price: dummyData[dummyData.length - 1].close,
+            color: '#D1D4DC',
+            lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            axisLabelVisible: true,
+            title: 'Current Price',
+        };
+        candlestickSeries.createPriceLine(priceLine);
+
+        // Crear contenedor para información OHLC
+        const ohlcContainer = document.createElement('div');
+        ohlcContainer.id = 'ohlc-info';
+        ohlcContainer.style.cssText = `
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(19, 23, 34, 0.9);
+            color: #D1D4DC;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Roboto', sans-serif;
+            z-index: 1000;
+            border: 1px solid #2A2E39;
+        `;
+        document.getElementById('tradingChart').appendChild(ohlcContainer);
+
+        // Ajustar el tamaño del gráfico
+        chart.timeScale().fitContent();
+
+        // Actualizar información OHLC
+        function updateOHLCInfo(data, hoveredCandle = null) {
+            const candle = hoveredCandle || (data.length > 0 ? data[data.length - 1] : null);
+            if (candle) {
+                const ohlcInfo = document.getElementById('ohlc-info');
+                ohlcInfo.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 4px;">${indice} ${temporalidad}</div>
+                    <div>O: ${candle.open.toFixed(2)}</div>
+                    <div>H: ${candle.high.toFixed(2)}</div>
+                    <div>L: ${candle.low.toFixed(2)}</div>
+                    <div>C: ${candle.close.toFixed(2)}</div>
+                `;
+            }
+        }
+
+        // Evento de crosshair para actualizar OHLC en tiempo real
+        chart.subscribeCrosshairMove((param) => {
+            if (param.time) {
+                const data = param.seriesData.get(candlestickSeries);
+                if (data) {
+                    updateOHLCInfo(null, data);
+                }
+            } else {
+                // Reset to last candle when not hovering
+                const data = candlestickSeries.data();
+                updateOHLCInfo(data);
+            }
+        });
+
+        // Cambiar temporalidad
+        window.changeTimeframe = function(newTemporalidad) {
+            if (!chart || !candlestickSeries) {
+                alert('Please open the chart first');
+                return;
+            }
+            currentTemporalidad = newTemporalidad;
+
+            // Regenerar datos dummy para la nueva temporalidad
+            const newData = generateDummyData(newTemporalidad);
+            candlestickSeries.setData(newData);
+            updateOHLCInfo(newData);
+            chart.timeScale().fitContent();
+
+            // Actualizar título
+            const chartTitle = document.getElementById("chartTitle");
+            chartTitle.textContent = `Gráfico en Vivo - ${currentIndice}`;
+        };
+
+        // Iniciar la actualización periódica del gráfico
+        intervalo = setInterval(() => {
+            actualizarGrafico(currentIndice, currentTemporalidad);
+        }, 5000);
+    }
+
+    function actualizarGrafico(indice, temporalidad) {
+        if (!candlestickSeries) {
+            console.error('Chart not initialized');
+            return;
+        }
+
+        // Simular actualización en tiempo real añadiendo una nueva vela
+        const currentData = candlestickSeries.data();
+        if (currentData && currentData.length > 0) {
+            const lastCandle = currentData[currentData.length - 1];
+            const newTime = lastCandle.time + (parseInt(temporalidad) * 60); // Añadir tiempo basado en temporalidad
+            const newOpen = lastCandle.close;
+            const newClose = newOpen + (Math.random() - 0.5) * 2;
+            const newHigh = Math.max(newOpen, newClose) + Math.random() * 1;
+            const newLow = Math.min(newOpen, newClose) - Math.random() * 1;
+
+            const newCandle = {
+                time: newTime,
+                open: parseFloat(newOpen.toFixed(2)),
+                high: parseFloat(newHigh.toFixed(2)),
+                low: parseFloat(newLow.toFixed(2)),
+                close: parseFloat(newClose.toFixed(2))
+            };
+
+            // Añadir nueva vela a los datos existentes
+            const updatedData = [...currentData, newCandle];
+            candlestickSeries.setData(updatedData);
+
+            // Actualizar línea de precio actual
+            candlestickSeries.createPriceLine({
+                price: newClose,
+                color: '#D1D4DC',
+                lineWidth: 1,
+                lineStyle: LightweightCharts.LineStyle.Dashed,
+                axisLabelVisible: true,
+                title: 'Current Price',
+            });
+
+            updateOHLCInfo(updatedData);
+
+            // Mostrar notificación si el modal está cerrado
+            const modal = document.getElementById("graficoModal");
+            if (modal.style.display === "none" || modal.style.display === "") {
+                showUpdateNotification();
+            } else {
+                // Actualizar timestamp de última actualización
+                const lastUpdate = document.getElementById('last-update');
+                if (lastUpdate) {
+                    lastUpdate.textContent = `Última actualización: ${new Date().toLocaleTimeString()}`;
+                }
+            }
+        }
+    }
+
+    function cerrarModal() {
+        const modal = document.getElementById("graficoModal");
+        modal.style.display = "none";
+
+        // Limpiar el intervalo cuando se cierra el modal
+        if (intervalo) {
+            clearInterval(intervalo);
+            intervalo = null;
+        }
+
+        alert('Chart closed. Real-time updates paused.');
+    }
+
+    // Función para mostrar notificaciones de actualización
+    function showUpdateNotification() {
+        const notification = document.createElement('div');
+        notification.innerHTML = '📊 Chart Updated';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #26A69A;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 10000;
+            animation: fadeIn 0.5s;
+        `;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'fadeOut 0.5s';
+            setTimeout(() => document.body.removeChild(notification), 500);
+        }, 2000);
+    }
+
+    function zoomIn() {
+        if (chart) {
+            chart.timeScale().zoomIn();
+        }
+    }
+
+    function zoomOut() {
+        if (chart) {
+            chart.timeScale().zoomOut();
+        }
+    }
+
+    function resetZoom() {
+        if (chart) {
+            chart.timeScale().fitContent();
+        }
+    }
+
+    let indicators = [];
+    let drawings = [];
+    let drawMode = null;
+
+    function addIndicator(type) {
+        if (!chart || !candlestickSeries) {
+            alert('Please open the chart first');
+            return;
+        }
+
+        if (type === 'ma') {
+            const maSeries = chart.addLineSeries({
+                color: '#2962ff',
+                lineWidth: 2,
+                title: 'MA(20)',
+            });
+            // Calcular MA de los datos actuales
+            const data = candlestickSeries.data();
+            if (data && data.length > 20) {
+                const maData = data.slice(20).map((d, i) => ({
+                    time: d.time,
+                    value: data.slice(i, i + 20).reduce((sum, c) => sum + c.close, 0) / 20
+                }));
+                maSeries.setData(maData);
+                indicators.push(maSeries);
+            }
+        } else if (type === 'bollinger') {
+            // Implementación básica de Bollinger Bands
+            alert('Bollinger Bands will be implemented in the next update');
+        }
+    }
+
+    function enableDraw(type) {
+        if (!chart || !candlestickSeries) {
+            alert('Please open the chart first');
+            return;
+        }
+
+        drawMode = type;
+        alert(`Drawing tool "${type}" activated. Click on the chart to add markers.`);
+
+        // Add click handler for drawing
+        const clickHandler = (param) => {
+            if (!drawMode) return;
+
+            if (drawMode === 'trendline') {
+                // Add a marker at clicked point
+                const existingMarkers = candlestickSeries.markers() || [];
+                candlestickSeries.setMarkers([...existingMarkers, {
+                    time: param.time,
+                    position: 'inBar',
+                    color: '#ffffff',
+                    shape: 'circle',
+                    text: 'T'
+                }]);
+            } else if (drawMode === 'horizontal') {
+                // Add horizontal line at clicked price
+                const price = param.seriesData.get(candlestickSeries).close;
+                candlestickSeries.createPriceLine({
+                    price: price,
+                    color: '#ff6b35',
+                    lineWidth: 1,
+                    lineStyle: LightweightCharts.LineStyle.Solid,
+                    axisLabelVisible: true,
+                    title: `Line @ ${price.toFixed(2)}`,
+                });
+            }
+
+            drawMode = null;
+            chart.unsubscribeClick(clickHandler);
+        };
+
+        chart.subscribeClick(clickHandler);
+    }
+
+    function clearDrawings() {
+        if (!chart || !candlestickSeries) {
+            alert('Please open the chart first');
+            return;
+        }
+
+        // Clear markers
+        candlestickSeries.setMarkers([]);
+
+        // Clear price lines (this is a simplified version)
+        // In a full implementation, you'd track and remove specific lines
+        indicators.forEach(indicator => {
+            if (indicator.remove) indicator.remove();
+        });
+        indicators = [];
+
+        drawings = [];
+    }
+</script>
+{% endblock %}

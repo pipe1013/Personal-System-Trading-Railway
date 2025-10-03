@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_notebooks.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.page-header {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.create-form {
+    animation: slideInLeft 0.8s ease-out;
+}
+
+.notebook-card {
+    animation: scaleIn 0.8s ease-out;
+    animation-fill-mode: both;
+}
+
+.notebook-card:nth-child(1) { animation-delay: 0.1s; }
+.notebook-card:nth-child(2) { animation-delay: 0.2s; }
+.notebook-card:nth-child(3) { animation-delay: 0.3s; }
+.notebook-card:nth-child(4) { animation-delay: 0.4s; }
+.notebook-card:nth-child(5) { animation-delay: 0.5s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="bi bi-journal me-3"></i>
+        Mis Cuadernos de Notas
+    </h1>
+    <p class="page-subtitle">Organiza tus ideas, estrategias y aprendizajes de trading en cuadernos personalizados</p>
+</div>
+
+<div class="notebooks-container">
+    <div class="create-form">
+        <div class="form-card">
+            <h2 class="form-title">
+                <i class="bi bi-plus-circle me-2"></i>
+                Crear Nuevo Cuaderno
+            </h2>
+            <p class="form-subtitle">Comienza un nuevo cuaderno para organizar tus notas</p>
+            
+            <form id="create-notebook-form" method="POST" action="{{ url_for('personal_notebooks') }}" class="notebook-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-group">
+                    <label for="notebook_name" class="form-label">
+                        <i class="bi bi-tag me-2"></i>
+                        Nombre del Cuaderno
+                    </label>
+                    <input type="text" id="notebook_name" name="notebook_name" class="form-control" placeholder="Ej: Estrategias de Scalping" required>
+                </div>
+                
+                <input type="hidden" name="action" value="create_notebook">
+                
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Crear Cuaderno
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="notebooks-grid">
+        {% for notebook in notebooks %}
+        <div class="notebook-card">
+            <div class="notebook-header">
+                <h3 class="notebook-title">
+                    <i class="bi bi-journal-text me-2"></i>
+                    {{ notebook['name'] }}
+                </h3>
+                <div class="notebook-meta">
+                    <span class="notebook-date">
+                        <i class="bi bi-calendar me-1"></i>
+                        Creado recientemente
+                    </span>
+                </div>
+            </div>
+            
+            <div class="notebook-body">
+                <p class="notebook-description">
+                    Organiza tus notas y estrategias de trading en este cuaderno personalizado.
+                </p>
+                
+                <div class="notebook-stats">
+                    <div class="stat-item">
+                        <i class="bi bi-file-text"></i>
+                        <span>Notas</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="bi bi-clock"></i>
+                        <span>Activo</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notebook-actions">
+                <button class="btn btn-primary enter-notebook" data-notebook-id="{{ notebook['id'] }}">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Entrar
+                </button>
+                
+                <button class="btn btn-danger delete-notebook" data-notebook-id="{{ notebook['id'] }}">
+                    <i class="bi bi-trash me-2"></i>
+                    Eliminar
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if not notebooks %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-journal-x"></i>
+            </div>
+            <h3 class="empty-title">No tienes cuadernos aún</h3>
+            <p class="empty-description">Crea tu primer cuaderno para comenzar a organizar tus notas de trading</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function() {
+        // Crear cuaderno
+        $('#create-notebook-form').submit(function(e) {
+            e.preventDefault();
+            
+            const notebookName = $('#notebook_name').val().trim();
+            if (!notebookName) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Por favor ingresa un nombre para el cuaderno.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+            
+            // Mostrar loading
+            const $btn = $(this).find('button[type="submit"]');
+            const originalText = $btn.html();
+            $btn.html('<i class="bi bi-hourglass-split me-2"></i>Creando...').prop('disabled', true);
+            
+            console.log('Enviando datos:', $(this).serialize());
+            
+            $.post($(this).attr('action'), $(this).serialize())
+                .done(function(response) {
+                    console.log('Respuesta del servidor:', response);
+                    Swal.fire({
+                        title: '¡Cuaderno Creado!',
+                        text: response.message || 'El cuaderno se ha creado correctamente',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                })
+                .fail(function(xhr, status, error) {
+                    console.error('Error al crear cuaderno:', error);
+                    console.error('Status:', xhr.status);
+                    console.error('Response:', xhr.responseText);
+                    
+                    let errorMessage = 'Error al crear el cuaderno. Intenta nuevamente.';
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    } else if (xhr.status === 401) {
+                        errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
+                    } else if (xhr.status === 400) {
+                        errorMessage = 'Datos inválidos. Verifica la información ingresada.';
+                    }
+                    
+                    Swal.fire({
+                        title: 'Error',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'Entendido'
+                    });
+                })
+                .always(function() {
+                    // Restaurar el botón
+                    $btn.html(originalText).prop('disabled', false);
+                });
+        });
+
+        // Eliminar cuaderno
+        $('.delete-notebook').click(function() {
+            const notebookId = $(this).data('notebook-id');
+            const notebookName = $(this).closest('.notebook-card').find('.notebook-title').text().trim();
+            
+            Swal.fire({
+                title: '¿Eliminar Cuaderno?',
+                html: `¿Estás seguro de que quieres eliminar el cuaderno <strong>"${notebookName}"</strong>?<br><br>Esta acción no se puede deshacer.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="bi bi-trash me-2"></i>Sí, eliminar',
+                cancelButtonText: '<i class="bi bi-x-circle me-2"></i>Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mostrar loading
+                    const $btn = $(this);
+                    const originalText = $btn.html();
+                    $btn.html('<i class="bi bi-hourglass-split me-2"></i>Eliminando...').prop('disabled', true);
+                    
+                    console.log('Eliminando cuaderno ID:', notebookId);
+                    
+                    $.post("{{ url_for('personal_notebooks') }}", {
+                        action: 'delete_notebook',
+                        personal_notebook_id: notebookId,
+                        csrf_token: '{{ csrf_token() }}'
+                    }).done(function(response) {
+                        console.log('Respuesta del servidor:', response);
+                        Swal.fire({
+                            title: '¡Eliminado!',
+                            text: response.message || 'El cuaderno se ha eliminado correctamente',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    }).fail(function(xhr, status, error) {
+                        console.error('Error al eliminar cuaderno:', error);
+                        console.error('Status:', xhr.status);
+                        console.error('Response:', xhr.responseText);
+                        
+                        let errorMessage = 'Error al eliminar el cuaderno. Intenta nuevamente.';
+                        
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        } else if (xhr.status === 401) {
+                            errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
+                        } else if (xhr.status === 404) {
+                            errorMessage = 'Cuaderno no encontrado.';
+                        } else if (xhr.status === 400) {
+                            errorMessage = 'Datos inválidos.';
+                        }
+                        
+                        Swal.fire({
+                            title: 'Error',
+                            text: errorMessage,
+                            icon: 'error',
+                            confirmButtonText: 'Entendido'
+                        });
+                    }).always(function() {
+                        // Restaurar el botón
+                        $btn.html(originalText).prop('disabled', false);
+                    });
+                }
+            });
+        });
+
+        // Entrar al cuaderno
+        $('.enter-notebook').click(function() {
+            const notebookId = $(this).data('notebook-id');
+            const notebookName = $(this).closest('.notebook-card').find('.notebook-title').text().trim();
+            
+            // Mostrar loading
+            const $btn = $(this);
+            const originalText = $btn.html();
+            $btn.html('<i class="bi bi-hourglass-split me-2"></i>Entrando...').prop('disabled', true);
+            
+            setTimeout(() => {
+                window.location.href = `/edit_notebook/${notebookId}`;
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

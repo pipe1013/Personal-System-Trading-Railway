@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styleGamificacion.css') }}">
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.page-header {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.month-selector {
+    animation: slideInLeft 0.8s ease-out;
+}
+
+.goal-card {
+    animation: scaleIn 0.8s ease-out;
+    animation-fill-mode: both;
+}
+
+.goal-card:nth-child(1) { animation-delay: 0.1s; }
+.goal-card:nth-child(2) { animation-delay: 0.2s; }
+.goal-card:nth-child(3) { animation-delay: 0.3s; }
+.goal-card:nth-child(4) { animation-delay: 0.4s; }
+.goal-card:nth-child(5) { animation-delay: 0.5s; }
+
+.achievement-badge {
+    animation: bounceIn 0.8s ease-out;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="bi bi-trophy me-3"></i>
+        Control de Metas y Logros
+    </h1>
+    <p class="page-subtitle">Establece metas, rastrea tu progreso y celebra tus logros en trading</p>
+</div>
+
+<div class="gamification-container">
+    {% if not selected_month %}
+    <div class="month-selector">
+        <div class="selector-card">
+            <h2 class="selector-title">
+                <i class="bi bi-calendar-month me-2"></i>
+                Selecciona el Mes
+            </h2>
+            <p class="selector-subtitle">Elige el mes para revisar tus metas y logros</p>
+            
+            {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ error_message }}
+            </div>
+            {% endif %}
+            
+            <form method="POST" action="{{ url_for('gamificacion') }}" class="selector-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-group">
+                    <label for="selected_month" class="form-label">
+                        <i class="bi bi-calendar me-2"></i>
+                        Mes a Revisar
+                    </label>
+                    <select id="selected_month" name="selected_month" class="form-control" required>
+                        {% for month in months %}
+                        <option value="{{ month }}">{{ month }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    Continuar
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="goals-container">
+        <div class="goals-header">
+            <h2 class="goals-title">
+                <i class="bi bi-target me-2"></i>
+                Metas y Logros para {{ selected_month }}
+            </h2>
+            <p class="goals-subtitle">Tu progreso hacia el éxito en trading</p>
+        </div>
+        
+        {% if error_message %}
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ error_message }}
+        </div>
+        {% endif %}
+        
+        <div class="goals-grid">
+            {% for meta in metas %}
+            <div class="goal-card">
+                <div class="goal-header">
+                    <h3 class="goal-title">
+                        <i class="bi bi-bullseye me-2"></i>
+                        {{ meta.descripcion }}
+                    </h3>
+                    {% if meta.cumplida %}
+                    <div class="achievement-badge">
+                        <i class="bi bi-trophy-fill"></i>
+                        <span>¡Completado!</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="goal-body">
+                    <div class="progress-section">
+                        <div class="progress-info">
+                            <span class="progress-label">Progreso</span>
+                            <span class="progress-percentage" id="progress-percentage-{{ loop.index }}">{{ meta.progreso }}%</span>
+                        </div>
+                        
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progress-bar-{{ loop.index }}" data-progreso="{{ meta.progreso }}">
+                                <div class="progress-fill"></div>
+                                <div class="progress-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if meta.cumplida %}
+                    <div class="celebration-message">
+                        <i class="bi bi-star-fill"></i>
+                        <span>¡Meta cumplida! 🎉</span>
+                    </div>
+                    {% else %}
+                    <div class="motivation-message">
+                        <i class="bi bi-lightbulb"></i>
+                        <span>Sigue así, estás cerca del objetivo</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Iterar sobre cada barra de progreso para actualizar su ancho
+        $('.progress-bar').each(function() {
+            let progreso = $(this).data('progreso');
+            $(this).css('width', progreso + '%');
+        });
+    });
+</script>
+{% endblock %}

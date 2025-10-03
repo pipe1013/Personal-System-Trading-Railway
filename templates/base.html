@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Control de Trading</title>
+    
+    <!-- Apple System Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=SF+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleNav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    {% block styles %}{% endblock %}
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <!-- Botón de menú móvil -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" style="display: none;">
+        <i class="bi bi-list"></i>
+    </button>
+    
+    <!-- Botón flotante para mostrar/ocultar sidebar -->
+    <button class="floating-menu-toggle" id="floatingMenuToggle" onclick="toggleSidebar()">
+        <i class="bi bi-layout-sidebar" id="floatingMenuIcon"></i>
+    </button>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ url_for('inicio') }}" class="logo">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span class="logo-text">Trading</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('inicio') }}">
+                            <i class="bi bi-house-door"></i>
+                            <span>Inicio</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register_trade') }}">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Registrar Trade</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('estadisticas') }}">
+                            <i class="bi bi-bar-chart-line"></i>
+                            <span>Estadísticas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('historial') }}">
+                            <i class="bi bi-journal-text"></i>
+                            <span>Historial</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('control_habitos') }}">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Hábitos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('gestion_riesgo') }}">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Gestión Riesgo</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('gamificacion') }}">
+                            <i class="bi bi-trophy"></i>
+                            <span>Control de Metas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('personal_notebooks') }}">
+                            <i class="bi bi-journal"></i>
+                            <span>Notas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('estrategias') }}">
+                            <i class="bi bi-lightbulb"></i>
+                            <span>Estrategias</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Controles del sidebar -->
+            <div class="sidebar-controls">
+                <div class="control-group">
+                    <label class="control-label">Navegación</label>
+                    <button class="control-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                        <i class="bi bi-layout-sidebar" id="sidebarToggleIcon"></i>
+                        <span id="sidebarToggleText">Ocultar menú</span>
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">Apariencia</label>
+                    <div class="theme-selector">
+                        <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">
+                            <i class="bi bi-moon"></i>
+                            <span>Oscuro</span>
+                        </button>
+                        <button class="theme-btn" data-theme="light" onclick="setTheme('light')">
+                            <i class="bi bi-sun"></i>
+                            <span>Claro</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <a class="nav-link logout-link" href="{{ url_for('logout') }}">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+            </main>
+    </div>
+
+    <!-- Welcome Message -->
+    {% if welcome_message %}
+    <script>
+        // Animación de bienvenida mejorada
+        Swal.fire({
+            icon: 'success',
+            title: '{{ welcome_message }}',
+            text: '¡Bienvenido al sistema de trading!',
+            timer: 4000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end',
+            background: 'var(--surface-primary)',
+            color: 'var(--text-primary)',
+            customClass: {
+                popup: 'welcome-popup'
+            }
+        });
+        
+        // Agregar animación de entrada al contenido principal
+        setTimeout(function() {
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.style.animation = 'fadeInUp 0.8s ease-out';
+            }
+        }, 500);
+        
+        // Sistema de animaciones de trading
+        let animationsVisible = window.animationsVisible;
+        let currentAnimationIndex = window.currentAnimationIndex;
+        let animationInterval = window.animationInterval;
+        
+        // Función para mostrar animaciones al iniciar sesión
+        function showWelcomeAnimations() {
+            // Evitar múltiples ejecuciones
+            if (window.animationsVisible) {
+                console.log('Las animaciones ya están visibles, evitando ejecución múltiple');
+                return;
+            }
+            
+            console.log('Intentando mostrar animaciones de bienvenida...');
+            const container = document.getElementById('trading-animations-container');
+            const animations = document.querySelectorAll('.trading-animation');
+            
+            console.log('Contenedor encontrado:', !!container);
+            console.log('Animaciones encontradas:', animations.length);
+            
+            if (container) {
+                // Forzar visibilidad del contenedor
+                container.style.display = 'flex';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+                container.style.zIndex = '1000';
+                
+                window.animationsVisible = true;
+                console.log('Contenedor mostrado, iniciando ciclo de animaciones...');
+                
+                if (animations.length > 0) {
+                    // Pequeño delay para asegurar que el contenedor esté visible
+                    setTimeout(function() {
+                        window.startAnimationCycle();
+                    }, 100);
+                } else {
+                    console.log('No hay animaciones para mostrar');
+                }
+            } else {
+                console.log('Error: No se encontró el contenedor de animaciones');
+            }
+        }
+        
+        // Función para ciclar entre animaciones
+        window.startAnimationCycle = function() {
+            const animations = document.querySelectorAll('.trading-animation');
+            if (animations.length === 0) {
+                console.log('No se encontraron animaciones');
+                return;
+            }
+            
+            console.log('Iniciando ciclo de animaciones, índice actual:', window.currentAnimationIndex);
+            
+            // Ocultar todas las animaciones primero
+            animations.forEach((anim, index) => {
+                if (anim && anim.style) {
+                    anim.style.display = 'none';
+                    anim.style.opacity = '0';
+                    anim.style.visibility = 'hidden';
+                    anim.classList.remove('active');
+                    console.log(`Animación ${index} ocultada`);
+                }
+            });
+            
+            // Pequeño delay para asegurar que todas estén ocultas
+            setTimeout(function() {
+                // Mostrar la animación actual
+                const currentAnimation = animations[window.currentAnimationIndex];
+                if (currentAnimation && currentAnimation.style) {
+                    currentAnimation.style.display = 'flex';
+                    currentAnimation.style.opacity = '1';
+                    currentAnimation.style.visibility = 'visible';
+                    currentAnimation.classList.add('active');
+                    
+                    console.log(`Mostrando animación ${window.currentAnimationIndex}:`, currentAnimation.id);
+                    
+                    // Animar elementos específicos
+                    animateCurrentAnimation();
+                    
+                    // Cambiar a la siguiente animación después de 6 segundos
+                    window.animationInterval = setTimeout(function() {
+                        window.currentAnimationIndex = (window.currentAnimationIndex + 1) % animations.length;
+                        window.startAnimationCycle();
+                    }, 6000);
+                } else {
+                    console.log('Error: No se pudo mostrar la animación actual');
+                }
+            }, 200); // Delay de 200ms para transición suave
+        }
+        
+        // Función para animar la animación actual
+        function animateCurrentAnimation() {
+            const activeAnimation = document.querySelector('.trading-animation.active');
+            if (!activeAnimation) return;
+            
+            const animationId = activeAnimation.id;
+            
+            switch(animationId) {
+                case 'phone-animation':
+                    animatePhoneTrading();
+                    break;
+                case 'dashboard-animation':
+                    animateDashboard();
+                    break;
+                case 'crypto-animation':
+                    animateCrypto();
+                    break;
+            }
+        }
+        
+        // Animación del celular
+        function animatePhoneTrading() {
+            const priceElement = document.querySelector('#phone-animation .price');
+            const changeElement = document.querySelector('#phone-animation .change');
+            const buttons = document.querySelectorAll('#phone-animation .trade-btn');
+            
+            let price = 1234.56;
+            let change = 2.34;
+            
+            const priceInterval = setInterval(function() {
+                const variation = (Math.random() - 0.5) * 0.1;
+                price += variation;
+                change = ((price - 1234.56) / 1234.56) * 100;
+                
+                if (priceElement) {
+                    priceElement.textContent = '$' + price.toFixed(2);
+                }
+                if (changeElement) {
+                    changeElement.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+                    changeElement.className = 'change ' + (change >= 0 ? 'positive' : 'negative');
+                }
+            }, 500);
+            
+            // Simular clicks en botones
+            buttons.forEach(function(btn, index) {
+                setTimeout(function() {
+                    btn.style.transform = 'scale(0.95)';
+                    setTimeout(function() {
+                        btn.style.transform = 'scale(1)';
+                    }, 100);
+                }, 1000 + (index * 500));
+            });
+            
+            // Limpiar intervalo cuando cambie de animación
+            setTimeout(function() {
+                clearInterval(priceInterval);
+            }, 3500);
+        }
+        
+        // Animación del dashboard
+        function animateDashboard() {
+            const metrics = document.querySelectorAll('#dashboard-animation .metric-value');
+            const charts = document.querySelectorAll('#dashboard-animation .chart-line-mini');
+            
+            // Animar métricas
+            metrics.forEach(function(metric, index) {
+                setTimeout(function() {
+                    metric.style.transform = 'scale(1.1)';
+                    setTimeout(function() {
+                        metric.style.transform = 'scale(1)';
+                    }, 200);
+                }, index * 300);
+            });
+            
+            // Animar gráficos
+            charts.forEach(function(chart, index) {
+                setTimeout(function() {
+                    chart.style.animation = 'chartMove 1s ease-in-out';
+                }, index * 200);
+            });
+        }
+        
+        // Animación de crypto
+        function animateCrypto() {
+            const cryptoPrice = document.querySelector('#crypto-animation .crypto-value');
+            const cryptoChange = document.querySelector('#crypto-animation .crypto-change');
+            const cryptoButtons = document.querySelectorAll('#crypto-animation .crypto-btn');
+            
+            let price = 43250.00;
+            let change = 5.2;
+            
+            const cryptoInterval = setInterval(function() {
+                const variation = (Math.random() - 0.5) * 100;
+                price += variation;
+                change = ((price - 43250) / 43250) * 100;
+                
+                if (cryptoPrice) {
+                    cryptoPrice.textContent = '$' + price.toFixed(2);
+                }
+                if (cryptoChange) {
+                    cryptoChange.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '%';
+                    cryptoChange.className = 'crypto-change ' + (change >= 0 ? 'positive' : 'negative');
+                }
+            }, 400);
+            
+            // Simular clicks en botones
+            cryptoButtons.forEach(function(btn, index) {
+                setTimeout(function() {
+                    btn.style.transform = 'scale(0.95)';
+                    setTimeout(function() {
+                        btn.style.transform = 'scale(1)';
+                    }, 100);
+                }, 1500 + (index * 500));
+            });
+            
+            setTimeout(function() {
+                clearInterval(cryptoInterval);
+            }, 3500);
+        }
+        
+        // Mostrar animaciones al iniciar sesión - UNA SOLA VEZ
+        setTimeout(function() {
+            showWelcomeAnimations();
+        }, 2000);
+    </script>
+    {% endif %}
+
+    <!-- Función global para alternar animaciones -->
+    <script>
+        // Variables globales para el sistema de animaciones
+        window.animationsVisible = false;
+        window.currentAnimationIndex = 0;
+        window.animationInterval = null;
+        
+    </script>
+
+    <!-- Trading Animations Container -->
+    <div id="trading-animations-container" class="trading-animations-container">
+        <!-- Animation 1: Trading Phone -->
+        <div class="trading-animation" id="phone-animation">
+            <div class="phone-container">
+                <div class="phone">
+                    <div class="phone-screen">
+                        <div class="trading-app">
+                            <div class="app-header">
+                                <div class="status-bar">
+                                    <span class="time">9:41</span>
+                                    <div class="signal-battery">
+                                        <div class="signal"></div>
+                                        <div class="battery"></div>
+                                    </div>
+                                </div>
+                                <div class="app-title">Trading Pro</div>
+                            </div>
+                            
+                            <div class="chart-area">
+                                <div class="chart-line"></div>
+                                <div class="chart-line"></div>
+                                <div class="chart-line"></div>
+                                <div class="price-display">
+                                    <span class="price">$1,234.56</span>
+                                    <span class="change positive">+2.34%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="trading-buttons">
+                                <button class="trade-btn buy">BUY</button>
+                                <button class="trade-btn sell">SELL</button>
+                            </div>
+                            
+                            <div class="orders-list">
+                                <div class="order-item">
+                                    <span class="order-type buy">BUY</span>
+                                    <span class="order-price">$1,230.00</span>
+                                    <span class="order-status">FILLED</span>
+                                </div>
+                                <div class="order-item">
+                                    <span class="order-type sell">SELL</span>
+                                    <span class="order-price">$1,240.00</span>
+                                    <span class="order-status">PENDING</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trading particles -->
+                <div class="trading-particles">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+                
+                <!-- Success indicators -->
+                <div class="success-indicators">
+                    <div class="success-icon">💰</div>
+                    <div class="success-icon">📈</div>
+                    <div class="success-icon">✅</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animation 2: Trading Dashboard -->
+        <div class="trading-animation" id="dashboard-animation">
+            <div class="dashboard-container">
+                <div class="dashboard-screen">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">Trading Dashboard</div>
+                        <div class="dashboard-status">
+                            <span class="status-indicator online"></span>
+                            <span>Online</span>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-charts">
+                        <div class="mini-chart">
+                            <div class="chart-line-mini"></div>
+                            <div class="chart-line-mini"></div>
+                            <div class="chart-line-mini"></div>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="chart-line-mini"></div>
+                            <div class="chart-line-mini"></div>
+                            <div class="chart-line-mini"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-metrics">
+                        <div class="metric">
+                            <span class="metric-label">P&L</span>
+                            <span class="metric-value positive">+$2,340</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Trades</span>
+                            <span class="metric-value">47</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Win Rate</span>
+                            <span class="metric-value positive">68%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Floating elements -->
+                <div class="floating-elements">
+                    <div class="floating-icon">📊</div>
+                    <div class="floating-icon">💹</div>
+                    <div class="floating-icon">📈</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animation 3: Crypto Trading -->
+        <div class="trading-animation" id="crypto-animation">
+            <div class="crypto-container">
+                <div class="crypto-screen">
+                    <div class="crypto-header">
+                        <div class="crypto-title">Crypto Trader</div>
+                        <div class="crypto-symbol">BTC/USD</div>
+                    </div>
+                    
+                    <div class="crypto-chart">
+                        <div class="crypto-line"></div>
+                        <div class="crypto-line"></div>
+                        <div class="crypto-line"></div>
+                        <div class="crypto-price">
+                            <span class="crypto-value">$43,250.00</span>
+                            <span class="crypto-change positive">+5.2%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="crypto-buttons">
+                        <button class="crypto-btn buy">LONG</button>
+                        <button class="crypto-btn sell">SHORT</button>
+                    </div>
+                </div>
+                
+                <!-- Crypto particles -->
+                <div class="crypto-particles">
+                    <div class="crypto-particle">₿</div>
+                    <div class="crypto-particle">₿</div>
+                    <div class="crypto-particle">₿</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Lightweight Charts -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Variables globales
+        let sidebarVisible = true;
+        let currentTheme = 'dark';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            
+            // Cargar preferencias guardadas
+            loadPreferences();
+            
+            // Mostrar/ocultar botón de menú móvil según el tamaño de pantalla
+            function toggleMobileMenuButton() {
+                if (window.innerWidth <= 768) {
+                    mobileMenuToggle.style.display = 'block';
+                } else {
+                    mobileMenuToggle.style.display = 'none';
+                    sidebar.classList.remove('open');
+                }
+            }
+            
+            // Toggle del sidebar en móvil
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+            
+            // Cerrar sidebar al hacer clic fuera en móvil
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(event.target) && 
+                    !mobileMenuToggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+            
+            // Manejar redimensionamiento de ventana
+            window.addEventListener('resize', toggleMobileMenuButton);
+            
+            // Inicializar
+            toggleMobileMenuButton();
+            
+            // Marcar enlace activo
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Función para toggle del sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+            const sidebarToggleText = document.getElementById('sidebarToggleText');
+            const floatingMenuToggle = document.getElementById('floatingMenuToggle');
+            const floatingMenuIcon = document.getElementById('floatingMenuIcon');
+            
+            sidebarVisible = !sidebarVisible;
+            
+            if (sidebarVisible) {
+                sidebar.classList.remove('collapsed');
+                sidebar.classList.add('expanded');
+                mainContent.classList.remove('sidebar-collapsed');
+                sidebarToggle.classList.add('active');
+                sidebarToggleIcon.className = 'bi bi-layout-sidebar';
+                sidebarToggleText.textContent = 'Ocultar menú';
+                floatingMenuIcon.className = 'bi bi-layout-sidebar';
+                floatingMenuToggle.title = 'Ocultar menú';
+            } else {
+                sidebar.classList.remove('expanded');
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                sidebarToggle.classList.remove('active');
+                sidebarToggleIcon.className = 'bi bi-layout-sidebar-reverse';
+                sidebarToggleText.textContent = 'Mostrar menú';
+                floatingMenuIcon.className = 'bi bi-layout-sidebar-reverse';
+                floatingMenuToggle.title = 'Mostrar menú';
+            }
+            
+            // Guardar preferencia
+            localStorage.setItem('sidebarVisible', sidebarVisible);
+        }
+
+        // Función para cambiar tema
+        function setTheme(theme) {
+            const body = document.body;
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            
+            // Remover tema anterior
+            body.removeAttribute('data-theme');
+            
+            // Aplicar nuevo tema
+            body.setAttribute('data-theme', theme);
+            currentTheme = theme;
+            
+            // Actualizar botones de tema
+            themeButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-theme') === theme) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Guardar preferencia
+            localStorage.setItem('theme', theme);
+        }
+
+        // Función para cargar preferencias
+        function loadPreferences() {
+            // Cargar tema
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(savedTheme);
+            
+            // Cargar visibilidad del sidebar
+            const savedSidebarVisible = localStorage.getItem('sidebarVisible');
+            if (savedSidebarVisible !== null) {
+                sidebarVisible = savedSidebarVisible === 'true';
+                if (!sidebarVisible) {
+                    toggleSidebar();
+                }
+            }
+        }
+        
+        // Función para mostrar notificaciones toast
+        function showToast(message, type = 'info', duration = 5000) {
+            const toastContainer = document.querySelector('.toast-container') || createToastContainer();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const iconMap = {
+                success: 'bi-check-circle',
+                error: 'bi-exclamation-circle',
+                warning: 'bi-exclamation-triangle',
+                info: 'bi-info-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <div class="toast-title">
+                        <i class="bi ${iconMap[type]}"></i>
+                        ${type.charAt(0).toUpperCase() + type.slice(1)}
+                    </div>
+                    <button class="toast-close" onclick="this.parentElement.parentElement.remove()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto-remove después del tiempo especificado
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, duration);
+        }
+        
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+            return container;
+        }
+        
+        // Función para mostrar loading spinner
+        function showLoading(element) {
+            if (element) {
+                element.classList.add('loading');
+            }
+        }
+        
+        function hideLoading(element) {
+            if (element) {
+                element.classList.remove('loading');
+            }
+        }
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

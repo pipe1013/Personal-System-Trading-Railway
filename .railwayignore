@@ -1,0 +1,53 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# File system
+.DS_Store
+.git/
+.gitignore
+README.md
+*.md
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads (excluding structure)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local development
+.env.local
+.env.development
+
+# Test files
+test/
+tests/
+*_test.py
+
+# Documentation
+docs/
+documentation/
+
+# Backup files
+*.bak
+*.backup
