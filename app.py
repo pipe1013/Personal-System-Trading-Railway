@@ -127,8 +127,8 @@ def init_db():
             )
         ''')
 
-        connection.commit()
-        connection.close()
+            connection.commit()
+            connection.close()
         print("Database initialized successfully.")
     except Exception as e:
         print(f"Error initializing database: {e}")
@@ -142,6 +142,62 @@ def home():
         username = session.get('username')
         welcome_message = session.pop('welcome', None)
         return render_template('base.html', username=username, welcome_message=welcome_message, show_video=True)
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        user = cursor.fetchone()
+        connection.close()
+
+        if user and check_password_hash(user['password'], password):
+            session['user_id'] = user['id']
+            session['username'] = username
+            session['welcome'] = f'Bienvenido, {username}!'
+            return redirect(url_for('home'))
+        else:
+            flash('Invalid username or password.', 'login_error')
+
+    return render_template('auth/login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if len(password) < 4:
+            flash('La contraseña debe tener al menos 4 caracteres.', 'error')
+            return redirect(url_for('register'))
+        
+        hashed_password = generate_password_hash(password)
+        
+    connection = get_db_connection()
+    cursor = connection.cursor()
+        try:
+            cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+        connection.commit()
+            flash('User created successfully! Please log in.', 'success')
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('Username already exists. Try a different one.', 'error')
+            return redirect(url_for('register'))
+    finally:
+        connection.close()
+
+    return render_template('auth/register.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('username', None)
+    flash('Logged out successfully!')
     return redirect(url_for('login'))
 
 # Add a simple test route
